@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "677288246627",
+    "project_id": "smart-cricket-scorer-21f7d",
+    "storage_bucket": "smart-cricket-scorer-21f7d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677288246627:android:4ee27ea2be8e5a39b22756",
+        "android_client_info": {
+          "package_name": "com.example.scoring_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgpA9noNrmog7uiZoWrSZHTaYRGe8Kip0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677288246627:android:95150927e7fecbd6b22756",
+        "android_client_info": {
+          "package_name": "com.example.smart_cricket_scorer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgpA9noNrmog7uiZoWrSZHTaYRGe8Kip0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
