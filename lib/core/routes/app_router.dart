@@ -1,15 +1,15 @@
 import 'package:go_router/go_router.dart';
-import 'package:smart_cricket_scorer/core/presentation/pages/main_screen.dart';
-import 'package:smart_cricket_scorer/features/matches/presentation/pages/create_match_screen.dart';
-import 'package:smart_cricket_scorer/features/matches/presentation/pages/match_squad_screen.dart';
-import 'package:smart_cricket_scorer/features/tournaments/presentation/pages/tournaments_screen.dart';
-import 'package:smart_cricket_scorer/features/tournaments/presentation/pages/create_tournament_screen.dart';
-import 'package:smart_cricket_scorer/features/tournaments/presentation/pages/tournament_dashboard_screen.dart';
-import 'package:smart_cricket_scorer/features/teams/presentation/pages/teams_screen.dart';
-import 'package:smart_cricket_scorer/features/teams/presentation/pages/team_detail_screen.dart';
-import 'package:smart_cricket_scorer/features/matches/presentation/pages/match_history_screen.dart';
-import 'package:smart_cricket_scorer/features/scoring/presentation/pages/live_scoring_screen.dart';
-import 'package:smart_cricket_scorer/features/scoring/presentation/pages/partnership_screen.dart';
+import 'package:scoring_app/core/presentation/pages/main_screen.dart';
+import 'package:scoring_app/features/matches/presentation/pages/create_match_screen.dart';
+import 'package:scoring_app/features/matches/presentation/pages/match_squad_screen.dart';
+import 'package:scoring_app/features/tournaments/presentation/pages/tournaments_screen.dart';
+import 'package:scoring_app/features/tournaments/presentation/pages/create_tournament_screen.dart';
+import 'package:scoring_app/features/tournaments/presentation/pages/tournament_dashboard_screen.dart';
+import 'package:scoring_app/features/teams/presentation/pages/teams_screen.dart';
+import 'package:scoring_app/features/teams/presentation/pages/team_detail_screen.dart';
+import 'package:scoring_app/features/matches/presentation/pages/match_history_screen.dart';
+import 'package:scoring_app/features/scoring/presentation/pages/live_scoring_screen.dart';
+import 'package:scoring_app/features/scoring/presentation/pages/partnership_screen.dart';
 final appRouter = GoRouter(
   initialLocation: '/new-match',
   routes: [

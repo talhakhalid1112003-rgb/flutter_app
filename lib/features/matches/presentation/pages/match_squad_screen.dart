@@ -1,0 +1,173 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smart_cricket_scorer/features/matches/presentation/providers/match_providers.dart';
+import 'package:smart_cricket_scorer/features/teams/presentation/providers/player_providers.dart';
+import 'package:smart_cricket_scorer/features/teams/domain/entities/app_player.dart';
+import 'package:smart_cricket_scorer/core/config/app_theme.dart';
+import 'package:uuid/uuid.dart';
+
+class MatchSquadScreen extends ConsumerWidget {
+  final String matchId;
+  final String inningsId;
+
+  const MatchSquadScreen({
+    super.key,
+    required this.matchId,
+    required this.inningsId,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final matchesAsync = ref.watch(matchesProvider);
+
+    return matchesAsync.when(
+      data: (matches) {
+        final matchOpt = matches.where((m) => m.matchId == matchId).toList();
+        if (matchOpt.isEmpty) {
+          return Scaffold(appBar: AppBar(), body: const Center(child: Text("Match not found")));
+        }
+        final match = matchOpt.first;
+
+        return DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Add Squad Players'),
+              bottom: TabBar(
+                indicatorColor: AppTheme.primaryBlue,
+                labelColor: AppTheme.primaryBlue,
+                unselectedLabelColor: Colors.grey,
+                tabs: [
+                  Tab(text: match.teamAName),
+                  Tab(text: match.teamBName),
+                ],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                _TeamSquadTab(teamId: match.teamAId!, teamName: match.teamAName),
+                _TeamSquadTab(teamId: match.teamBId!, teamName: match.teamBName),
+              ],
+            ),
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () => context.go('/scoring/$matchId/$inningsId'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                ),
+                child: const Text('Start Match'),
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, st) => Scaffold(body: Center(child: Text('Error: $e'))),
+    );
+  }
+}
+
+class _TeamSquadTab extends ConsumerStatefulWidget {
+  final String teamId;
+  final String teamName;
+
+  const _TeamSquadTab({required this.teamId, required this.teamName});
+
+  @override
+  ConsumerState<_TeamSquadTab> createState() => _TeamSquadTabState();
+}
+
+class _TeamSquadTabState extends ConsumerState<_TeamSquadTab> {
+  final _nameCtrl = TextEditingController();
+
+  void _addPlayer() async {
+    final name = _nameCtrl.text.trim();
+    if (name.isEmpty) return;
+
+    final newPlayer = AppPlayer(
+      playerId: const Uuid().v4(),
+      playerName: name,
+      teamId: widget.teamId,
+      role: 'Batter', 
+      battingStyle: 'Right Hand',
+      bowlingStyle: 'Right Arm Fast',
+    );
+
+    try {
+      await ref.read(playerRepositoryProvider).addPlayer(newPlayer);
+      _nameCtrl.clear();
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final playersAsync = ref.watch(playersByTeamProvider(widget.teamId));
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _nameCtrl,
+                  decoration: InputDecoration(
+                    labelText: 'Player Name',
+                    hintText: 'Enter name to add to ${widget.teamName}',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: _addPlayer,
+                icon: const Icon(Icons.add_circle),
+                color: AppTheme.primaryBlue,
+                iconSize: 40,
+              )
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: playersAsync.when(
+              data: (players) {
+                if (players.isEmpty) return const Center(child: Text("No players added yet.", style: TextStyle(color: Colors.grey)));
+                return ListView.builder(
+                  itemCount: players.length,
+                  itemBuilder: (context, index) {
+                    final player = players[index];
+                    return Card(
+                      color: AppTheme.cardColorDark,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          backgroundColor: AppTheme.primaryBlue,
+                          child: Icon(Icons.person, color: Colors.white),
+                        ),
+                        title: Text(player.playerName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        subtitle: Text(player.role, style: const TextStyle(color: Colors.grey)),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            ref.read(playerRepositoryProvider).removePlayer(player.playerId);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, st) => Center(child: Text('Error: $e')),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

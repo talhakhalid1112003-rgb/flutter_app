@@ -20,6 +20,7 @@ abstract class AppMatch with _$AppMatch {
     required String teamBName,
     String? teamAId,
     String? teamBId,
+    String? tournamentId,
     required int overs,
     required String tossWinner,
     required String tossDecision, // 'bat' or 'bowl'
