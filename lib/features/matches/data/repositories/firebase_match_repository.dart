@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/entities/app_match.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_innings.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_ball.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/player_stats.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/repositories/match_repository.dart';
-import 'package:smart_cricket_scorer/core/error/failures.dart';
+import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_innings.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_ball.dart';
+import 'package:scoring_app/features/scoring/domain/entities/player_stats.dart';
+import 'package:scoring_app/features/matches/domain/repositories/match_repository.dart';
+import 'package:scoring_app/core/error/failures.dart';
 
 class FirebaseMatchRepositoryImpl implements MatchRepository {
   final FirebaseFirestore _firestore;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_cricket_scorer/features/teams/presentation/providers/team_providers.dart';
-import 'package:smart_cricket_scorer/features/teams/domain/entities/app_team.dart';
-import 'package:smart_cricket_scorer/core/config/app_theme.dart';
+import 'package:scoring_app/features/teams/presentation/providers/team_providers.dart';
+import 'package:scoring_app/features/teams/domain/entities/app_team.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
 import 'package:uuid/uuid.dart';
 
 class TeamsScreen extends ConsumerWidget {

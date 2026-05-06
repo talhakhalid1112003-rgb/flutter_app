@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smart_cricket_scorer/features/teams/domain/entities/app_player.dart';
-import 'package:smart_cricket_scorer/features/teams/domain/repositories/player_repository.dart';
-import 'package:smart_cricket_scorer/core/error/failures.dart';
+import 'package:scoring_app/features/teams/domain/entities/app_player.dart';
+import 'package:scoring_app/features/teams/domain/repositories/player_repository.dart';
+import 'package:scoring_app/core/error/failures.dart';
 
 class FirebasePlayerRepositoryImpl implements PlayerRepository {
   final FirebaseFirestore _firestore;

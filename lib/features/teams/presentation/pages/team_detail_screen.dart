@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_cricket_scorer/features/teams/presentation/providers/player_providers.dart';
-import 'package:smart_cricket_scorer/features/teams/domain/entities/app_player.dart';
+import 'package:scoring_app/features/teams/presentation/providers/player_providers.dart';
+import 'package:scoring_app/features/teams/domain/entities/app_player.dart';
 import 'package:uuid/uuid.dart';
 
 class TeamDetailScreen extends ConsumerWidget {
