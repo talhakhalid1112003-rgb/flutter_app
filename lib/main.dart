@@ -1,80 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // Make sure this is imported
+import 'package:go_router/go_router.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
+import 'package:scoring_app/core/routes/app_router.dart';
+import 'package:scoring_app/models/sport_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'firebase_options.dart'; // Add this import
 
 void main() async {
-  // Ensure Flutter bindings are initialized before Firebase
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase using the generated options
   try {
-    // Save the initialized app to a variable
-    final app = await Firebase.initializeApp(
+    // Update the initialization code
+    await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    // If it reaches this line, Firebase is working!
-    debugPrint("✅ FIREBASE IS WORKING! Connected to app: ${app.options.projectId}");
   } catch (e) {
-    debugPrint("❌ FIREBASE FAILED: $e");
+    debugPrint("Firebase init failed: $e");
   }
 
-  runApp(const MyApp());
+  final preferences = await SharedPreferences.getInstance();
+  final savedSport = preferences.getString(SportModel.selectedSportKey);
+  final initialLocation = savedSport == null
+      ? AppRoutes.sportSelection
+      : SportModel.fromStorageValue(savedSport).routePath;
+
+  final GoRouter router = createAppRouter(initialLocation: initialLocation);
+
+  runApp(ProviderScope(child: MyApp(routerConfig: router)));
 }
 
-// ... rest of your code (MyApp class, etc.)
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key, required this.routerConfig});
+
+  final GoRouter routerConfig;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Firebase Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      // Fix: Removed the semicolon at the end
-      home: const MyHomePage(title: 'Flutter Firebase Home Page'),
-    ); // Notice the semicolon goes down here at the end of the return statement
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Smart Cricket Scorer',
+      theme: AppTheme.darkTheme,
+      routerConfig: routerConfig,
     );
   }
 }
