@@ -1,7 +1,7 @@
-import 'package:smart_cricket_scorer/features/matches/domain/entities/app_match.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_innings.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_ball.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/player_stats.dart';
+import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_innings.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_ball.dart';
+import 'package:scoring_app/features/scoring/domain/entities/player_stats.dart';
 
 abstract class MatchRepository {
   Stream<List<AppMatch>> watchMatches();

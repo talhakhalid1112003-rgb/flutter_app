@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_cricket_scorer/core/config/app_theme.dart';
-import 'package:smart_cricket_scorer/features/tournaments/presentation/providers/tournament_providers.dart';
-
+import 'package:scoring_app/core/config/app_theme.dart';
+import 'package:scoring_app/features/tournaments/presentation/providers/tournament_providers.dart';
 
 class TournamentDashboardScreen extends ConsumerWidget {
   final String tournamentId;
@@ -25,7 +24,8 @@ class TournamentDashboardScreen extends ConsumerWidget {
       ),
       body: tournamentAsync.when(
         data: (tournament) {
-          if (tournament == null) return const Center(child: Text("Tournament not found"));
+          if (tournament == null)
+            return const Center(child: Text("Tournament not found"));
 
           return standingsAsync.when(
             data: (standings) {
@@ -34,29 +34,54 @@ class TournamentDashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(tournament.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center),
+                    Text(
+                      tournament.name,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 8),
-                    Text('Format: ${tournament.format} | Overs: ${tournament.overs}', style: const TextStyle(color: AppTheme.primaryBlue), textAlign: TextAlign.center),
+                    Text(
+                      'Format: ${tournament.format} | Overs: ${tournament.overs}',
+                      style: const TextStyle(color: AppTheme.primaryBlue),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
                       onPressed: () {
-                        context.push('/new-match', extra: tournamentId); 
+                        context.push('/new-match', extra: tournamentId);
                       },
                       icon: const Icon(Icons.sports_cricket),
                       label: const Text('Start Tournament Match'),
                     ),
                     const SizedBox(height: 32),
-                    const Text('Points Table', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                    const Text(
+                      'Points Table',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     _buildPointsTable(standings),
                     const SizedBox(height: 48),
                     ElevatedButton(
                       onPressed: () async {
                         // End Tournament logic
-                        await ref.read(tournamentRepositoryProvider).updateTournament(tournament.copyWith(status: 'completed'));
+                        await ref
+                            .read(tournamentRepositoryProvider)
+                            .updateTournament(
+                              tournament.copyWith(status: 'completed'),
+                            );
                         if (context.mounted) context.pop();
                       },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
                       child: const Text('End Tournament'),
                     ),
                   ],
@@ -64,7 +89,8 @@ class TournamentDashboardScreen extends ConsumerWidget {
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Center(child: Text('Error loading standings: $e')),
+            error: (e, st) =>
+                Center(child: Text('Error loading standings: $e')),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -75,7 +101,12 @@ class TournamentDashboardScreen extends ConsumerWidget {
 
   Widget _buildPointsTable(List<TeamStanding> standings) {
     if (standings.isEmpty) {
-       return const Center(child: Text('No teams in this tournament', style: TextStyle(color: Colors.white70)));
+      return const Center(
+        child: Text(
+          'No teams in this tournament',
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
     }
     return FittedBox(
       fit: BoxFit.scaleDown,
@@ -85,7 +116,11 @@ class TournamentDashboardScreen extends ConsumerWidget {
         horizontalMargin: 8,
         headingRowColor: WidgetStateProperty.all(AppTheme.cardColorDark),
         dataRowColor: WidgetStateProperty.all(const Color(0xFF14142B)),
-        headingTextStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue),
+        headingTextStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: AppTheme.primaryBlue,
+        ),
         dataTextStyle: const TextStyle(fontSize: 12, color: Colors.white),
         columns: const [
           DataColumn(label: Text('No.')),
@@ -102,12 +137,25 @@ class TournamentDashboardScreen extends ConsumerWidget {
           return DataRow(
             cells: [
               DataCell(Text('${index + 1}')),
-              DataCell(SizedBox(width: 80, child: Text(team.teamName, overflow: TextOverflow.ellipsis))),
+              DataCell(
+                SizedBox(
+                  width: 80,
+                  child: Text(team.teamName, overflow: TextOverflow.ellipsis),
+                ),
+              ),
               DataCell(Text('${team.matchesPlayed}')),
               DataCell(Text('${team.wins}')),
               DataCell(Text('${team.losses}')),
               DataCell(Text('${team.draws}')),
-              DataCell(Text('${team.points}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryBlue))),
+              DataCell(
+                Text(
+                  '${team.points}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryBlue,
+                  ),
+                ),
+              ),
               DataCell(Text(team.nrr.toStringAsFixed(2))),
             ],
           );

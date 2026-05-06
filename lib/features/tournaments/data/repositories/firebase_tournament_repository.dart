@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smart_cricket_scorer/features/tournaments/domain/entities/app_tournament.dart';
-import 'package:smart_cricket_scorer/features/tournaments/domain/repositories/tournament_repository.dart';
+import 'package:scoring_app/features/tournaments/domain/entities/app_tournament.dart';
+import 'package:scoring_app/features/tournaments/domain/repositories/tournament_repository.dart';
 
 class FirebaseTournamentRepositoryImpl implements TournamentRepository {
   final FirebaseFirestore _firestore;
@@ -21,9 +21,11 @@ class FirebaseTournamentRepositoryImpl implements TournamentRepository {
         .collection('tournaments')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AppTournament.fromJson(doc.data()))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AppTournament.fromJson(doc.data()))
+              .toList(),
+        );
   }
 
   @override

@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_cricket_scorer/core/providers/firebase_providers.dart';
-import 'package:smart_cricket_scorer/features/matches/data/repositories/firebase_match_repository.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/repositories/match_repository.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/entities/app_match.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_innings.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_ball.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/player_stats.dart';
+import 'package:scoring_app/core/providers/firebase_providers.dart';
+import 'package:scoring_app/features/matches/data/repositories/firebase_match_repository.dart';
+import 'package:scoring_app/features/matches/domain/repositories/match_repository.dart';
+import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_innings.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_ball.dart';
+import 'package:scoring_app/features/scoring/domain/entities/player_stats.dart';
 
 final matchRepositoryProvider = Provider<MatchRepository>((ref) {
   final firestore = ref.watch(firestoreProvider);

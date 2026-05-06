@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_cricket_scorer/constants/app_colors.dart';
+import 'package:scoring_app/constants/app_colors.dart';
 
 class SportCard extends StatelessWidget {
   const SportCard({

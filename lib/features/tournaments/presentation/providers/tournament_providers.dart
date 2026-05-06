@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_cricket_scorer/core/providers/firebase_providers.dart';
-import 'package:smart_cricket_scorer/features/tournaments/data/repositories/firebase_tournament_repository.dart';
-import 'package:smart_cricket_scorer/features/tournaments/domain/repositories/tournament_repository.dart';
-import 'package:smart_cricket_scorer/features/tournaments/domain/entities/app_tournament.dart';
-import 'package:smart_cricket_scorer/features/matches/presentation/providers/match_providers.dart';
-import 'package:smart_cricket_scorer/features/teams/presentation/providers/team_providers.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/entities/app_match.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_innings.dart';
+import 'package:scoring_app/core/providers/firebase_providers.dart';
+import 'package:scoring_app/features/tournaments/data/repositories/firebase_tournament_repository.dart';
+import 'package:scoring_app/features/tournaments/domain/repositories/tournament_repository.dart';
+import 'package:scoring_app/features/tournaments/domain/entities/app_tournament.dart';
+import 'package:scoring_app/features/matches/presentation/providers/match_providers.dart';
+import 'package:scoring_app/features/teams/presentation/providers/team_providers.dart';
+import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_innings.dart';
 
 class TeamStanding {
   final String teamId;
@@ -25,8 +25,12 @@ class TeamStanding {
   int get points => (wins * 2) + (draws * 1);
 
   double get nrr {
-    double scoredRate = ballsFaced > 0 ? (runsScored / (ballsFaced / 6.0)) : 0.0;
-    double concededRate = ballsBowled > 0 ? (runsConceded / (ballsBowled / 6.0)) : 0.0;
+    double scoredRate = ballsFaced > 0
+        ? (runsScored / (ballsFaced / 6.0))
+        : 0.0;
+    double concededRate = ballsBowled > 0
+        ? (runsConceded / (ballsBowled / 6.0))
+        : 0.0;
     return scoredRate - concededRate;
   }
 }
@@ -46,83 +50,106 @@ final tournamentsProvider = StreamProvider<List<AppTournament>>((ref) {
   return ref.watch(tournamentRepositoryProvider).watchTournaments();
 });
 
-final tournamentDetailsProvider = FutureProvider.family<AppTournament?, String>((ref, id) {
-  return ref.watch(tournamentRepositoryProvider).getTournament(id);
-});
+final tournamentDetailsProvider = FutureProvider.family<AppTournament?, String>(
+  (ref, id) {
+    return ref.watch(tournamentRepositoryProvider).getTournament(id);
+  },
+);
 
-final tournamentStandingsProvider = FutureProvider.family<List<TeamStanding>, String>((ref, tournamentId) async {
-  final tournament = await ref.watch(tournamentDetailsProvider(tournamentId).future);
-  if (tournament == null) return [];
+final tournamentStandingsProvider =
+    FutureProvider.family<List<TeamStanding>, String>((
+      ref,
+      tournamentId,
+    ) async {
+      final tournament = await ref.watch(
+        tournamentDetailsProvider(tournamentId).future,
+      );
+      if (tournament == null) return [];
 
-  final allTeams = await ref.watch(teamsProvider.future);
-  final tournamentTeams = allTeams.where((t) => tournament.teamIds.contains(t.teamId)).toList();
-  
-  Map<String, TeamStanding> standings = {
-    for (var t in tournamentTeams) t.teamId: TeamStanding(teamId: t.teamId, teamName: t.teamName)
-  };
+      final allTeams = await ref.watch(teamsProvider.future);
+      final tournamentTeams = allTeams
+          .where((t) => tournament.teamIds.contains(t.teamId))
+          .toList();
 
-  final allMatches = await ref.watch(matchesProvider.future);
-  final tMatches = allMatches.where((m) => m.tournamentId == tournamentId && m.currentPhase == MatchPhase.completed).toList();
+      Map<String, TeamStanding> standings = {
+        for (var t in tournamentTeams)
+          t.teamId: TeamStanding(teamId: t.teamId, teamName: t.teamName),
+      };
 
-  final matchRepo = ref.read(matchRepositoryProvider);
+      final allMatches = await ref.watch(matchesProvider.future);
+      final tMatches = allMatches
+          .where(
+            (m) =>
+                m.tournamentId == tournamentId &&
+                m.currentPhase == MatchPhase.completed,
+          )
+          .toList();
 
-  for (var match in tMatches) {
-    if (!standings.containsKey(match.teamAId) || !standings.containsKey(match.teamBId)) continue;
-    
-    // Fetch innings
-    final inningsList = await matchRepo.watchInnings(match.matchId).first;
-    if (inningsList.isEmpty) continue;
+      final matchRepo = ref.read(matchRepositoryProvider);
 
-    AppInnings? teamAInnings;
-    AppInnings? teamBInnings;
+      for (var match in tMatches) {
+        if (!standings.containsKey(match.teamAId) ||
+            !standings.containsKey(match.teamBId))
+          continue;
 
-    for (var inn in inningsList) {
-      if (inn.battingTeamId == match.teamAId) teamAInnings = inn;
-      if (inn.battingTeamId == match.teamBId) teamBInnings = inn;
-    }
+        // Fetch innings
+        final inningsList = await matchRepo.watchInnings(match.matchId).first;
+        if (inningsList.isEmpty) continue;
 
-    if (teamAInnings == null || teamBInnings == null) continue;
+        AppInnings? teamAInnings;
+        AppInnings? teamBInnings;
 
-    int teamARuns = teamAInnings.totalRuns;
-    int teamBRuns = teamBInnings.totalRuns;
+        for (var inn in inningsList) {
+          if (inn.battingTeamId == match.teamAId) teamAInnings = inn;
+          if (inn.battingTeamId == match.teamBId) teamBInnings = inn;
+        }
 
-    int teamABallsFaced = teamAInnings.wickets == 10 ? match.overs * 6 : _calculateBalls(teamAInnings.overs);
-    int teamBBallsFaced = teamBInnings.wickets == 10 ? match.overs * 6 : _calculateBalls(teamBInnings.overs);
+        if (teamAInnings == null || teamBInnings == null) continue;
 
-    // Update match results
-    standings[match.teamAId!]!.matchesPlayed++;
-    standings[match.teamBId!]!.matchesPlayed++;
+        int teamARuns = teamAInnings.totalRuns;
+        int teamBRuns = teamBInnings.totalRuns;
 
-    if (teamARuns > teamBRuns) {
-      standings[match.teamAId!]!.wins++;
-      standings[match.teamBId!]!.losses++;
-    } else if (teamBRuns > teamARuns) {
-      standings[match.teamBId!]!.wins++;
-      standings[match.teamAId!]!.losses++;
-    } else {
-      standings[match.teamAId!]!.draws++;
-      standings[match.teamBId!]!.draws++;
-    }
+        int teamABallsFaced = teamAInnings.wickets == 10
+            ? match.overs * 6
+            : _calculateBalls(teamAInnings.overs);
+        int teamBBallsFaced = teamBInnings.wickets == 10
+            ? match.overs * 6
+            : _calculateBalls(teamBInnings.overs);
 
-    // Update runs and overs
-    // Team A
-    standings[match.teamAId!]!.runsScored += teamARuns;
-    standings[match.teamAId!]!.ballsFaced += teamABallsFaced;
-    standings[match.teamAId!]!.runsConceded += teamBRuns;
-    standings[match.teamAId!]!.ballsBowled += teamBBallsFaced;
+        // Update match results
+        standings[match.teamAId!]!.matchesPlayed++;
+        standings[match.teamBId!]!.matchesPlayed++;
 
-    // Team B
-    standings[match.teamBId!]!.runsScored += teamBRuns;
-    standings[match.teamBId!]!.ballsFaced += teamBBallsFaced;
-    standings[match.teamBId!]!.runsConceded += teamARuns;
-    standings[match.teamBId!]!.ballsBowled += teamABallsFaced;
-  }
+        if (teamARuns > teamBRuns) {
+          standings[match.teamAId!]!.wins++;
+          standings[match.teamBId!]!.losses++;
+        } else if (teamBRuns > teamARuns) {
+          standings[match.teamBId!]!.wins++;
+          standings[match.teamAId!]!.losses++;
+        } else {
+          standings[match.teamAId!]!.draws++;
+          standings[match.teamBId!]!.draws++;
+        }
 
-  var sortedStandings = standings.values.toList();
-  sortedStandings.sort((a, b) {
-    if (b.points != a.points) return b.points.compareTo(a.points);
-    return b.nrr.compareTo(a.nrr);
-  });
+        // Update runs and overs
+        // Team A
+        standings[match.teamAId!]!.runsScored += teamARuns;
+        standings[match.teamAId!]!.ballsFaced += teamABallsFaced;
+        standings[match.teamAId!]!.runsConceded += teamBRuns;
+        standings[match.teamAId!]!.ballsBowled += teamBBallsFaced;
 
-  return sortedStandings;
-});
+        // Team B
+        standings[match.teamBId!]!.runsScored += teamBRuns;
+        standings[match.teamBId!]!.ballsFaced += teamBBallsFaced;
+        standings[match.teamBId!]!.runsConceded += teamARuns;
+        standings[match.teamBId!]!.ballsBowled += teamABallsFaced;
+      }
+
+      var sortedStandings = standings.values.toList();
+      sortedStandings.sort((a, b) {
+        if (b.points != a.points) return b.points.compareTo(a.points);
+        return b.nrr.compareTo(a.nrr);
+      });
+
+      return sortedStandings;
+    });

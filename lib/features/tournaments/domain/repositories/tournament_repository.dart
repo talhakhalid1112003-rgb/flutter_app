@@ -1,4 +1,4 @@
-import 'package:smart_cricket_scorer/features/tournaments/domain/entities/app_tournament.dart';
+import 'package:scoring_app/features/tournaments/domain/entities/app_tournament.dart';
 
 abstract class TournamentRepository {
   Future<void> createTournament(AppTournament tournament);

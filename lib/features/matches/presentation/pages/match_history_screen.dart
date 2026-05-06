@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_cricket_scorer/features/matches/presentation/providers/match_providers.dart';
-import 'package:smart_cricket_scorer/core/config/app_theme.dart';
-import 'package:smart_cricket_scorer/core/providers/firebase_providers.dart';
+import 'package:scoring_app/features/matches/presentation/providers/match_providers.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
+import 'package:scoring_app/core/providers/firebase_providers.dart';
 import 'package:go_router/go_router.dart';
 
 class MatchHistoryScreen extends ConsumerWidget {

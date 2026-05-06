@@ -1,4 +1,4 @@
-import 'package:smart_cricket_scorer/features/teams/domain/entities/app_player.dart';
+import 'package:scoring_app/features/teams/domain/entities/app_player.dart';
 
 abstract class PlayerRepository {
   Stream<List<AppPlayer>> watchPlayersForTeam(String teamId);

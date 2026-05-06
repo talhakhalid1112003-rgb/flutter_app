@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/match_player_stats.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_ball.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/entities/app_match.dart';
+import 'package:scoring_app/features/scoring/domain/entities/match_player_stats.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_ball.dart';
+import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
 
 part 'scoring_state.freezed.dart';
 
@@ -58,7 +58,9 @@ abstract class ScoringState with _$ScoringState {
 
     int? runsN = targetScore;
     int? ballsR = totalOvers != null ? totalOvers * 6 : null;
-    double? rrr = (runsN != null && ballsR != null && ballsR > 0) ? (runsN / (ballsR / 6)) : null;
+    double? rrr = (runsN != null && ballsR != null && ballsR > 0)
+        ? (runsN / (ballsR / 6))
+        : null;
 
     return ScoringState(
       matchId: matchId,

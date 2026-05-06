@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_cricket_scorer/core/config/app_theme.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
 
 class PartnershipScreen extends ConsumerWidget {
   final String matchId;
@@ -46,19 +46,50 @@ class PartnershipScreen extends ConsumerWidget {
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('Batsman 1', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text('45 (30)', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Batsman 1',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '45 (30)',
+                        style: TextStyle(
+                          color: AppTheme.primaryBlue,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                    child: Text('--- Partnership: 60 (45) ---', style: TextStyle(color: Colors.white54)),
+                    child: Text(
+                      '--- Partnership: 60 (45) ---',
+                      style: TextStyle(color: Colors.white54),
+                    ),
                   ),
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('Batsman 2', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                      Text('15 (15)', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Batsman 2',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '15 (15)',
+                        style: TextStyle(
+                          color: AppTheme.primaryBlue,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -67,7 +98,11 @@ class PartnershipScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             const Text(
               'Previous Partnerships',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -78,9 +113,18 @@ class PartnershipScreen extends ConsumerWidget {
                     color: AppTheme.cardColorDark,
                     margin: const EdgeInsets.only(bottom: 8.0),
                     child: ListTile(
-                      title: Text('Wicket ${index + 1}: 35 runs', style: const TextStyle(color: Colors.white)),
-                      subtitle: const Text('Batsman A & Batsman B', style: TextStyle(color: Colors.white54)),
-                      trailing: const Text('20 balls', style: TextStyle(color: AppTheme.primaryBlue)),
+                      title: Text(
+                        'Wicket ${index + 1}: 35 runs',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      subtitle: const Text(
+                        'Batsman A & Batsman B',
+                        style: TextStyle(color: Colors.white54),
+                      ),
+                      trailing: const Text(
+                        '20 balls',
+                        style: TextStyle(color: AppTheme.primaryBlue),
+                      ),
                     ),
                   );
                 },

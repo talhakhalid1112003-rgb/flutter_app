@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smart_cricket_scorer/features/scoring/presentation/providers/scoring_controller.dart';
-import 'package:smart_cricket_scorer/features/scoring/presentation/providers/scoring_state.dart';
-import 'package:smart_cricket_scorer/features/matches/presentation/providers/match_providers.dart';
-import 'package:smart_cricket_scorer/features/matches/domain/entities/app_match.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/app_innings.dart';
-import 'package:smart_cricket_scorer/features/teams/presentation/providers/player_providers.dart';
-import 'package:smart_cricket_scorer/features/scoring/domain/entities/match_player_stats.dart';
-import 'package:smart_cricket_scorer/core/config/app_theme.dart';
+import 'package:scoring_app/features/scoring/presentation/providers/scoring_controller.dart';
+import 'package:scoring_app/features/scoring/presentation/providers/scoring_state.dart';
+import 'package:scoring_app/features/matches/presentation/providers/match_providers.dart';
+import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
+import 'package:scoring_app/features/scoring/domain/entities/app_innings.dart';
+import 'package:scoring_app/features/teams/presentation/providers/player_providers.dart';
+import 'package:scoring_app/features/scoring/domain/entities/match_player_stats.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
 import 'package:go_router/go_router.dart';
 
 class LiveScoringScreen extends ConsumerStatefulWidget {

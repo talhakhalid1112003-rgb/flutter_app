@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_cricket_scorer/core/config/app_theme.dart';
-import 'package:smart_cricket_scorer/features/tournaments/presentation/providers/tournament_providers.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
+import 'package:scoring_app/features/tournaments/presentation/providers/tournament_providers.dart';
 
 class TournamentsScreen extends ConsumerWidget {
   const TournamentsScreen({super.key});
@@ -12,9 +12,7 @@ class TournamentsScreen extends ConsumerWidget {
     final tournamentsAsync = ref.watch(tournamentsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Easy Cricket Scorer'),
-      ),
+      appBar: AppBar(title: const Text('Easy Cricket Scorer')),
       body: tournamentsAsync.when(
         data: (tournaments) {
           if (tournaments.isEmpty) {
@@ -36,7 +34,10 @@ class TournamentsScreen extends ConsumerWidget {
                   const SizedBox(height: 64),
                   const Icon(Icons.folder_off, size: 100, color: Colors.grey),
                   const SizedBox(height: 16),
-                  const Text('No Tournaments Found', style: TextStyle(color: Colors.grey)),
+                  const Text(
+                    'No Tournaments Found',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ],
               ),
             );
@@ -52,29 +53,57 @@ class TournamentsScreen extends ConsumerWidget {
                 margin: const EdgeInsets.only(bottom: 16),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  title: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
+                  title: Text(
+                    t.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Format: ${t.format}  |  Overs: ${t.overs}', style: const TextStyle(color: Colors.grey)),
+                        Text(
+                          'Format: ${t.format}  |  Overs: ${t.overs}',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
                         const SizedBox(height: 8),
                         if (t.status == 'active')
                           Row(
                             children: [
                               const _BlinkingDot(),
                               const SizedBox(width: 8),
-                              const Text('Ongoing Tournament', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 12)),
+                              const Text(
+                                'Ongoing Tournament',
+                                style: TextStyle(
+                                  color: Colors.greenAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ],
                           )
                         else
-                          const Text('Completed', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 12)),
+                          const Text(
+                            'Completed',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                       ],
                     ),
                   ),
-                  trailing: const Icon(Icons.arrow_forward_ios, color: AppTheme.primaryBlue),
-                  onTap: () => context.push('/tournament-dashboard/${t.tournamentId}'),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios,
+                    color: AppTheme.primaryBlue,
+                  ),
+                  onTap: () =>
+                      context.push('/tournament-dashboard/${t.tournamentId}'),
                 ),
               );
             },
@@ -104,7 +133,8 @@ class _BlinkingDot extends StatefulWidget {
   State<_BlinkingDot> createState() => _BlinkingDotState();
 }
 
-class _BlinkingDotState extends State<_BlinkingDot> with SingleTickerProviderStateMixin {
+class _BlinkingDotState extends State<_BlinkingDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
