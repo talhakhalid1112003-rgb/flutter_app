@@ -50,16 +50,17 @@ class _CreateTournamentScreenState
       await ref.read(tournamentRepositoryProvider).createTournament(tournament);
       if (mounted) context.go('/tournament-dashboard/$tournamentId');
     } catch (e) {
-      if (mounted)
+      if (mounted){
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final teamsAsync = ref.watch(teamsProvider);
+    final teamsAsync = ref.watch(teamsProvider('cricket'));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Start New Tournament')),
@@ -113,10 +114,11 @@ class _CreateTournamentScreenState
               ),
               child: teamsAsync.when(
                 data: (teams) {
-                  if (teams.isEmpty)
+                  if (teams.isEmpty){
                     return const Center(
                       child: Text("No teams available. Create teams first."),
                     );
+                    }
                   return ListView.builder(
                     itemCount: teams.length,
                     itemBuilder: (context, index) {

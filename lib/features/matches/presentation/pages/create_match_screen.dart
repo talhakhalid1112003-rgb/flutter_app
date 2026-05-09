@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:scoring_app/features/teams/presentation/providers/team_providers.dart';
 import 'package:scoring_app/features/tournaments/presentation/providers/tournament_providers.dart';
+import 'package:scoring_app/core/providers/firebase_providers.dart';
 import 'package:scoring_app/features/matches/presentation/providers/match_providers.dart';
 import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
 import 'package:scoring_app/features/scoring/domain/entities/app_innings.dart';
@@ -12,7 +13,10 @@ import 'package:go_router/go_router.dart';
 
 class CreateMatchScreen extends ConsumerStatefulWidget {
   final String? tournamentId;
-  const CreateMatchScreen({super.key, this.tournamentId});
+  final String? sportId;
+  final String? teamFormat;
+
+  const CreateMatchScreen({super.key, this.tournamentId, this.sportId, this.teamFormat});
 
   @override
   ConsumerState<CreateMatchScreen> createState() => _CreateMatchScreenState();
@@ -26,7 +30,7 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
   final oversCtrl = TextEditingController(text: '20');
   String? tossWinner; // 'host' or 'visitor'
   String tossDecision = 'Bat';
-  
+
   @override
   void dispose() {
     teamACtrl.dispose();
@@ -37,20 +41,66 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedSport = widget.sportId?.toUpperCase() ?? 'CRICKET';
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Easy Cricket Scorer')),
+      appBar: AppBar(title: Text('$selectedSport Scorer')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Card(
+              color: AppTheme.cardColorDark,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Selected sport: ${selectedSport.toLowerCase()}',
+                      style: const TextStyle(
+                        color: AppTheme.primaryBlue,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (widget.sportId == 'badminton' && widget.teamFormat != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Format: ${widget.teamFormat!.toUpperCase()}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             _buildTeamSelectionCard(),
             const SizedBox(height: 24),
-            const Text('Toss won by?', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Toss won by?',
+              style: TextStyle(
+                color: AppTheme.primaryBlue,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             _buildTossWinnerSelection(),
             const SizedBox(height: 24),
-            const Text('Opted to?', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Opted to?',
+              style: TextStyle(
+                color: AppTheme.primaryBlue,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             _buildDecisionSelection(),
             const SizedBox(height: 24),
@@ -64,10 +114,12 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
               onPressed: _startMatch,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
               ),
               child: const Text('Start match'),
-            )
+            ),
           ],
         ),
       ),
@@ -81,13 +133,23 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Text('Enter or Select Team Names', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Enter or Select Team Names',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: teamACtrl,
               decoration: InputDecoration(
                 labelText: 'Host Team Name',
-                suffixIcon: IconButton(icon: const Icon(Icons.list, color: AppTheme.primaryBlue), onPressed: () => _showTeamSelectionModal(true)),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.list, color: AppTheme.primaryBlue),
+                  onPressed: () => _showTeamSelectionModal(true),
+                ),
               ),
               onChanged: (val) {
                 teamAId = null;
@@ -95,13 +157,24 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
               },
             ),
             const SizedBox(height: 16),
-            const Text('VS', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic, color: AppTheme.primaryBlue)),
+            const Text(
+              'VS',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+                color: AppTheme.primaryBlue,
+              ),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: teamBCtrl,
               decoration: InputDecoration(
                 labelText: 'Visitor Team Name',
-                suffixIcon: IconButton(icon: const Icon(Icons.list, color: AppTheme.primaryBlue), onPressed: () => _showTeamSelectionModal(false)),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.list, color: AppTheme.primaryBlue),
+                  onPressed: () => _showTeamSelectionModal(false),
+                ),
               ),
               onChanged: (val) {
                 teamBId = null;
@@ -116,13 +189,18 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
 
   void _showTeamSelectionModal(bool isHost) async {
     try {
-      final allTeams = await ref.read(teamsProvider.future);
+      final sportId = widget.sportId ?? 'cricket';
+      final allTeams = await ref.read(teamsProvider(sportId).future);
       List<dynamic> teamsToShow = allTeams;
 
       if (widget.tournamentId != null) {
-        final tournament = await ref.read(tournamentDetailsProvider(widget.tournamentId!).future);
+        final tournament = await ref.read(
+          tournamentDetailsProvider(widget.tournamentId!).future,
+        );
         if (tournament != null) {
-          teamsToShow = allTeams.where((t) => tournament.teamIds.contains(t.teamId)).toList();
+          teamsToShow = allTeams
+              .where((t) => tournament.teamIds.contains(t.teamId))
+              .toList();
         }
       }
 
@@ -136,7 +214,16 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('Select ${isHost ? "Host" : "Visitor"} Team', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text(
+                  widget.sportId == 'badminton' && widget.teamFormat != null
+                      ? 'Select ${widget.teamFormat} ${isHost ? "Host" : "Visitor"} Team'
+                      : 'Select ${isHost ? "Host" : "Visitor"} Team',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               Expanded(
                 child: ListView.builder(
@@ -144,8 +231,14 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
                   itemBuilder: (context, index) {
                     final t = teamsToShow[index];
                     return ListTile(
-                      leading: const CircleAvatar(backgroundColor: AppTheme.primaryBlue, child: Icon(Icons.group, color: Colors.white)),
-                      title: Text(t.teamName, style: const TextStyle(color: Colors.white)),
+                      leading: const CircleAvatar(
+                        backgroundColor: AppTheme.primaryBlue,
+                        child: Icon(Icons.group, color: Colors.white),
+                      ),
+                      title: Text(
+                        t.teamName,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       onTap: () {
                         setState(() {
                           if (isHost) {
@@ -164,16 +257,24 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
               ),
             ],
           );
-        }
+        },
       );
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading teams: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading teams: $e')));
+      }
     }
   }
 
   Widget _buildTossWinnerSelection() {
-    final hostName = teamACtrl.text.trim().isNotEmpty ? teamACtrl.text.trim() : "Host Team";
-    final visitorName = teamBCtrl.text.trim().isNotEmpty ? teamBCtrl.text.trim() : "Visitor Team";
+    final hostName = teamACtrl.text.trim().isNotEmpty
+        ? teamACtrl.text.trim()
+        : "Host Team";
+    final visitorName = teamBCtrl.text.trim().isNotEmpty
+        ? teamBCtrl.text.trim()
+        : "Visitor Team";
     return Row(
       children: [
         Expanded(
@@ -217,14 +318,22 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
     );
   }
 
-  Widget _buildCustomSelection({required String label, required bool isSelected, required VoidCallback onTap}) {
+  Widget _buildCustomSelection({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryBlue.withAlpha(51) : Colors.transparent,
-          border: Border.all(color: isSelected ? AppTheme.primaryBlue : Colors.white24),
+          color: isSelected
+              ? AppTheme.primaryBlue.withAlpha(51)
+              : Colors.transparent,
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryBlue : Colors.white24,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.center,
@@ -232,7 +341,9 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
               color: isSelected ? AppTheme.primaryBlue : Colors.white54,
               size: 20,
             ),
@@ -257,11 +368,15 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
     final teamAName = teamACtrl.text.trim();
     final teamBName = teamBCtrl.text.trim();
     if (teamAName.isEmpty || teamBName.isEmpty || tossWinner == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter team names and select toss winner')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter team names and select toss winner'),
+        ),
+      );
       return;
     }
     int overs = int.tryParse(oversCtrl.text) ?? 20;
-    
+
     final matchId = const Uuid().v4();
     final finalTeamAId = teamAId ?? const Uuid().v4();
     final finalTeamBId = teamBId ?? const Uuid().v4();
@@ -282,13 +397,21 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
       currentPhase: MatchPhase.firstInnings,
       createdAt: DateTime.now(),
     );
-    
-    String battingTeamName = tossDecision.toLowerCase() == 'bat' ? actualTossWinnerName : (tossWinner == 'host' ? teamBName : teamAName);
-    String bowlingTeamName = battingTeamName == teamAName ? teamBName : teamAName;
-    
-    String battingTeamId = battingTeamName == teamAName ? finalTeamAId : finalTeamBId;
-    String bowlingTeamId = battingTeamName == teamAName ? finalTeamBId : finalTeamAId;
-    
+
+    String battingTeamName = tossDecision.toLowerCase() == 'bat'
+        ? actualTossWinnerName
+        : (tossWinner == 'host' ? teamBName : teamAName);
+    String bowlingTeamName = battingTeamName == teamAName
+        ? teamBName
+        : teamAName;
+
+    String battingTeamId = battingTeamName == teamAName
+        ? finalTeamAId
+        : finalTeamBId;
+    String bowlingTeamId = battingTeamName == teamAName
+        ? finalTeamBId
+        : finalTeamAId;
+
     final inningsId = const Uuid().v4();
     final innings = AppInnings(
       inningsId: inningsId,
@@ -301,15 +424,43 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
       wickets: 0,
       overs: 0.0,
     );
-    
+
     try {
-      await ref.read(matchRepositoryProvider).createMatch(match);
+      final userId = ref.read(firebaseAuthProvider).currentUser?.uid;
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login to create a match.')));
+        return;
+      }
+
+      await ref.read(matchRepositoryProvider).createMatch(
+            match,
+            sportId: widget.sportId ?? 'cricket',
+            createdBy: userId,
+          );
       await ref.read(matchRepositoryProvider).saveInnings(innings);
+      if (widget.tournamentId != null) {
+        final tournament = await ref.read(
+          tournamentDetailsProvider(widget.tournamentId!).future,
+        );
+        if (tournament != null) {
+          await ref
+              .read(tournamentRepositoryProvider)
+              .updateTournament(
+                tournament.copyWith(
+                  matchIds: [...tournament.matchIds, matchId],
+                ),
+              );
+        }
+      }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-      return;
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        return;
+      }
     }
-    
+
     if (mounted) {
       context.go('/match-squad/$matchId/$inningsId');
     }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scoring_app/core/providers/firebase_providers.dart';
+import 'package:scoring_app/features/auth/providers/auth_provider.dart';
 import 'package:scoring_app/features/matches/data/repositories/firebase_match_repository.dart';
 import 'package:scoring_app/features/matches/domain/repositories/match_repository.dart';
 import 'package:scoring_app/features/matches/domain/entities/app_match.dart';
@@ -13,7 +14,9 @@ final matchRepositoryProvider = Provider<MatchRepository>((ref) {
 });
 
 final matchesProvider = StreamProvider<List<AppMatch>>((ref) {
-  return ref.watch(matchRepositoryProvider).watchMatches();
+  final user = ref.watch(authControllerProvider).value;
+  final userId = user?.uid;
+  return ref.watch(matchRepositoryProvider).watchMatches('cricket', createdBy: userId);
 });
 
 final inningsProvider = StreamProvider.family<List<AppInnings>, String>((ref, matchId) {

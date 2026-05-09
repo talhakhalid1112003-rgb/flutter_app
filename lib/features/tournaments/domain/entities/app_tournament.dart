@@ -11,6 +11,7 @@ abstract class AppTournament with _$AppTournament {
     required String format, // Test, ODI, T20
     required int overs,
     required List<String> teamIds,
+    @Default(<String>[]) List<String> matchIds,
     required String status, // active, completed
     required DateTime createdAt,
   }) = _AppTournament;

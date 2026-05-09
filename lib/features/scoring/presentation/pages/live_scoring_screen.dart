@@ -140,7 +140,10 @@ class _LiveScoringScreenState extends ConsumerState<LiveScoringScreen> {
         currentBowlerId: bowler,
       );
       
-      ref.read(matchRepositoryProvider).createMatch(updatedMatch); 
+      await ref.read(matchRepositoryProvider).createMatch(
+        updatedMatch,
+        sportId: updatedMatch.sportId ?? 'cricket',
+      ); 
     }
   }
 

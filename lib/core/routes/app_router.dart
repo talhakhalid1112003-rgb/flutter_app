@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scoring_app/core/presentation/pages/main_screen.dart';
 import 'package:scoring_app/features/matches/presentation/pages/create_match_screen.dart';
 import 'package:scoring_app/features/matches/presentation/pages/match_squad_screen.dart';
@@ -8,10 +9,28 @@ import 'package:scoring_app/features/tournaments/presentation/pages/tournament_d
 import 'package:scoring_app/features/teams/presentation/pages/teams_screen.dart';
 import 'package:scoring_app/features/teams/presentation/pages/team_detail_screen.dart';
 import 'package:scoring_app/features/matches/presentation/pages/match_history_screen.dart';
+import 'package:scoring_app/features/sport_selection/presentation/pages/badminton_format_screen.dart';
+import 'package:scoring_app/features/sport_selection/presentation/pages/sport_selection_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/live_scoring_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/partnership_screen.dart';
+import 'package:scoring_app/features/auth/screens/login_screen.dart';
+import 'package:scoring_app/features/auth/screens/signup_screen.dart';
+
 final appRouter = GoRouter(
-  initialLocation: '/new-match',
+  initialLocation: '/',
+  redirect: (context, state) {
+    final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+    if (!isLoggedIn) {
+      if (state.uri.path != '/login' && state.uri.path != '/signup') {
+        return '/login';
+      }
+    } else {
+      if (state.uri.path == '/login' || state.uri.path == '/signup' || state.uri.path == '/') {
+        return '/sport-selection';
+      }
+    }
+    return null;
+  },
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -24,7 +43,13 @@ final appRouter = GoRouter(
               path: '/new-match',
               builder: (context, state) {
                 final tournamentId = state.extra as String?;
-                return CreateMatchScreen(tournamentId: tournamentId);
+                final sportId = state.uri.queryParameters['sportId'];
+                final teamFormat = state.uri.queryParameters['teamFormat'];
+                return CreateMatchScreen(
+                  tournamentId: tournamentId,
+                  sportId: sportId,
+                  teamFormat: teamFormat,
+                );
               },
             ),
           ],
@@ -46,7 +71,11 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: ':id',
                   builder: (context, state) {
-                    return TeamDetailScreen(teamId: state.pathParameters['id']!);
+                    return TeamDetailScreen(
+                      teamId: state.pathParameters['id']!,
+                      sportId: state.uri.queryParameters['sportId'] ?? 'cricket',
+                      selectedFormat: state.uri.queryParameters['selectedFormat'],
+                    );
                   },
                 ),
               ],
@@ -64,6 +93,14 @@ final appRouter = GoRouter(
       ],
     ),
     // Scoring screen, squad screen, and tournament screens are outside the bottom nav
+    GoRoute(
+      path: '/sport-selection',
+      builder: (context, state) => const SportSelectionScreen(),
+    ),
+    GoRoute(
+      path: '/badminton-format-screen',
+      builder: (context, state) => const BadmintonFormatScreen(),
+    ),
     GoRoute(
       path: '/create-tournament',
       builder: (context, state) => const CreateTournamentScreen(),
@@ -100,6 +137,14 @@ final appRouter = GoRouter(
           inningsId: state.pathParameters['inningsId']!,
         );
       },
+    ),
+    GoRoute(
+      path: '/signup',
+      builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
     ),
   ],
 );

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$AppTournament {
 
  String get tournamentId; String get name; String get format;// Test, ODI, T20
- int get overs; List<String> get teamIds; String get status;// active, completed
+ int get overs; List<String> get teamIds; List<String> get matchIds; String get status;// active, completed
  DateTime get createdAt;
 /// Create a copy of AppTournament
 /// with the given fields replaced by the non-null parameter values.
@@ -30,16 +30,16 @@ $AppTournamentCopyWith<AppTournament> get copyWith => _$AppTournamentCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppTournament&&(identical(other.tournamentId, tournamentId) || other.tournamentId == tournamentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.format, format) || other.format == format)&&(identical(other.overs, overs) || other.overs == overs)&&const DeepCollectionEquality().equals(other.teamIds, teamIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppTournament&&(identical(other.tournamentId, tournamentId) || other.tournamentId == tournamentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.format, format) || other.format == format)&&(identical(other.overs, overs) || other.overs == overs)&&const DeepCollectionEquality().equals(other.teamIds, teamIds)&&const DeepCollectionEquality().equals(other.matchIds, matchIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tournamentId,name,format,overs,const DeepCollectionEquality().hash(teamIds),status,createdAt);
+int get hashCode => Object.hash(runtimeType,tournamentId,name,format,overs,const DeepCollectionEquality().hash(teamIds),const DeepCollectionEquality().hash(matchIds),status,createdAt);
 
 @override
 String toString() {
-  return 'AppTournament(tournamentId: $tournamentId, name: $name, format: $format, overs: $overs, teamIds: $teamIds, status: $status, createdAt: $createdAt)';
+  return 'AppTournament(tournamentId: $tournamentId, name: $name, format: $format, overs: $overs, teamIds: $teamIds, matchIds: $matchIds, status: $status, createdAt: $createdAt)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $AppTournamentCopyWith<$Res>  {
   factory $AppTournamentCopyWith(AppTournament value, $Res Function(AppTournament) _then) = _$AppTournamentCopyWithImpl;
 @useResult
 $Res call({
- String tournamentId, String name, String format, int overs, List<String> teamIds, String status, DateTime createdAt
+ String tournamentId, String name, String format, int overs, List<String> teamIds, List<String> matchIds, String status, DateTime createdAt
 });
 
 
@@ -67,13 +67,14 @@ class _$AppTournamentCopyWithImpl<$Res>
 
 /// Create a copy of AppTournament
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tournamentId = null,Object? name = null,Object? format = null,Object? overs = null,Object? teamIds = null,Object? status = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tournamentId = null,Object? name = null,Object? format = null,Object? overs = null,Object? teamIds = null,Object? matchIds = null,Object? status = null,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 tournamentId: null == tournamentId ? _self.tournamentId : tournamentId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,format: null == format ? _self.format : format // ignore: cast_nullable_to_non_nullable
 as String,overs: null == overs ? _self.overs : overs // ignore: cast_nullable_to_non_nullable
 as int,teamIds: null == teamIds ? _self.teamIds : teamIds // ignore: cast_nullable_to_non_nullable
+as List<String>,matchIds: null == matchIds ? _self.matchIds : matchIds // ignore: cast_nullable_to_non_nullable
 as List<String>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String tournamentId,  String name,  String format,  int overs,  List<String> teamIds,  String status,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String tournamentId,  String name,  String format,  int overs,  List<String> teamIds,  List<String> matchIds,  String status,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppTournament() when $default != null:
-return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.teamIds,_that.status,_that.createdAt);case _:
+return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.teamIds,_that.matchIds,_that.status,_that.createdAt);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.tea
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String tournamentId,  String name,  String format,  int overs,  List<String> teamIds,  String status,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String tournamentId,  String name,  String format,  int overs,  List<String> teamIds,  List<String> matchIds,  String status,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _AppTournament():
-return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.teamIds,_that.status,_that.createdAt);case _:
+return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.teamIds,_that.matchIds,_that.status,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.tea
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String tournamentId,  String name,  String format,  int overs,  List<String> teamIds,  String status,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String tournamentId,  String name,  String format,  int overs,  List<String> teamIds,  List<String> matchIds,  String status,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _AppTournament() when $default != null:
-return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.teamIds,_that.status,_that.createdAt);case _:
+return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.teamIds,_that.matchIds,_that.status,_that.createdAt);case _:
   return null;
 
 }
@@ -217,7 +218,7 @@ return $default(_that.tournamentId,_that.name,_that.format,_that.overs,_that.tea
 @JsonSerializable()
 
 class _AppTournament implements AppTournament {
-  const _AppTournament({required this.tournamentId, required this.name, required this.format, required this.overs, required final  List<String> teamIds, required this.status, required this.createdAt}): _teamIds = teamIds;
+  const _AppTournament({required this.tournamentId, required this.name, required this.format, required this.overs, required final  List<String> teamIds, final  List<String> matchIds = const <String>[], required this.status, required this.createdAt}): _teamIds = teamIds,_matchIds = matchIds;
   factory _AppTournament.fromJson(Map<String, dynamic> json) => _$AppTournamentFromJson(json);
 
 @override final  String tournamentId;
@@ -230,6 +231,13 @@ class _AppTournament implements AppTournament {
   if (_teamIds is EqualUnmodifiableListView) return _teamIds;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_teamIds);
+}
+
+ final  List<String> _matchIds;
+@override@JsonKey() List<String> get matchIds {
+  if (_matchIds is EqualUnmodifiableListView) return _matchIds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_matchIds);
 }
 
 @override final  String status;
@@ -249,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppTournament&&(identical(other.tournamentId, tournamentId) || other.tournamentId == tournamentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.format, format) || other.format == format)&&(identical(other.overs, overs) || other.overs == overs)&&const DeepCollectionEquality().equals(other._teamIds, _teamIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppTournament&&(identical(other.tournamentId, tournamentId) || other.tournamentId == tournamentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.format, format) || other.format == format)&&(identical(other.overs, overs) || other.overs == overs)&&const DeepCollectionEquality().equals(other._teamIds, _teamIds)&&const DeepCollectionEquality().equals(other._matchIds, _matchIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tournamentId,name,format,overs,const DeepCollectionEquality().hash(_teamIds),status,createdAt);
+int get hashCode => Object.hash(runtimeType,tournamentId,name,format,overs,const DeepCollectionEquality().hash(_teamIds),const DeepCollectionEquality().hash(_matchIds),status,createdAt);
 
 @override
 String toString() {
-  return 'AppTournament(tournamentId: $tournamentId, name: $name, format: $format, overs: $overs, teamIds: $teamIds, status: $status, createdAt: $createdAt)';
+  return 'AppTournament(tournamentId: $tournamentId, name: $name, format: $format, overs: $overs, teamIds: $teamIds, matchIds: $matchIds, status: $status, createdAt: $createdAt)';
 }
 
 
@@ -269,7 +277,7 @@ abstract mixin class _$AppTournamentCopyWith<$Res> implements $AppTournamentCopy
   factory _$AppTournamentCopyWith(_AppTournament value, $Res Function(_AppTournament) _then) = __$AppTournamentCopyWithImpl;
 @override @useResult
 $Res call({
- String tournamentId, String name, String format, int overs, List<String> teamIds, String status, DateTime createdAt
+ String tournamentId, String name, String format, int overs, List<String> teamIds, List<String> matchIds, String status, DateTime createdAt
 });
 
 
@@ -286,13 +294,14 @@ class __$AppTournamentCopyWithImpl<$Res>
 
 /// Create a copy of AppTournament
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tournamentId = null,Object? name = null,Object? format = null,Object? overs = null,Object? teamIds = null,Object? status = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tournamentId = null,Object? name = null,Object? format = null,Object? overs = null,Object? teamIds = null,Object? matchIds = null,Object? status = null,Object? createdAt = null,}) {
   return _then(_AppTournament(
 tournamentId: null == tournamentId ? _self.tournamentId : tournamentId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,format: null == format ? _self.format : format // ignore: cast_nullable_to_non_nullable
 as String,overs: null == overs ? _self.overs : overs // ignore: cast_nullable_to_non_nullable
 as int,teamIds: null == teamIds ? _self._teamIds : teamIds // ignore: cast_nullable_to_non_nullable
+as List<String>,matchIds: null == matchIds ? _self._matchIds : matchIds // ignore: cast_nullable_to_non_nullable
 as List<String>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,

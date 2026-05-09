@@ -25,8 +25,8 @@ class TournamentDashboardScreen extends ConsumerWidget {
       body: tournamentAsync.when(
         data: (tournament) {
           if (tournament == null)
-            return const Center(child: Text("Tournament not found"));
-
+            {return const Center(child: Text("Tournament not found"));
+            }
           return standingsAsync.when(
             data: (standings) {
               return SingleChildScrollView(

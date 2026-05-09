@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppTeam {
 
- String get teamId; String get teamName; String get createdBy;
+ String get teamId; String get teamName; String get createdBy; String? get format;
 /// Create a copy of AppTeam
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AppTeamCopyWith<AppTeam> get copyWith => _$AppTeamCopyWithImpl<AppTeam>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppTeam&&(identical(other.teamId, teamId) || other.teamId == teamId)&&(identical(other.teamName, teamName) || other.teamName == teamName)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppTeam&&(identical(other.teamId, teamId) || other.teamId == teamId)&&(identical(other.teamName, teamName) || other.teamName == teamName)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.format, format) || other.format == format));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,teamId,teamName,createdBy);
+int get hashCode => Object.hash(runtimeType,teamId,teamName,createdBy,format);
 
 @override
 String toString() {
-  return 'AppTeam(teamId: $teamId, teamName: $teamName, createdBy: $createdBy)';
+  return 'AppTeam(teamId: $teamId, teamName: $teamName, createdBy: $createdBy, format: $format)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AppTeamCopyWith<$Res>  {
   factory $AppTeamCopyWith(AppTeam value, $Res Function(AppTeam) _then) = _$AppTeamCopyWithImpl;
 @useResult
 $Res call({
- String teamId, String teamName, String createdBy
+ String teamId, String teamName, String createdBy, String? format
 });
 
 
@@ -65,12 +65,13 @@ class _$AppTeamCopyWithImpl<$Res>
 
 /// Create a copy of AppTeam
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? teamId = null,Object? teamName = null,Object? createdBy = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? teamId = null,Object? teamName = null,Object? createdBy = null,Object? format = freezed,}) {
   return _then(_self.copyWith(
 teamId: null == teamId ? _self.teamId : teamId // ignore: cast_nullable_to_non_nullable
 as String,teamName: null == teamName ? _self.teamName : teamName // ignore: cast_nullable_to_non_nullable
 as String,createdBy: null == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
-as String,
+as String,format: freezed == format ? _self.format : format // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String teamId,  String teamName,  String createdBy)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String teamId,  String teamName,  String createdBy,  String? format)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppTeam() when $default != null:
-return $default(_that.teamId,_that.teamName,_that.createdBy);case _:
+return $default(_that.teamId,_that.teamName,_that.createdBy,_that.format);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.teamId,_that.teamName,_that.createdBy);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String teamId,  String teamName,  String createdBy)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String teamId,  String teamName,  String createdBy,  String? format)  $default,) {final _that = this;
 switch (_that) {
 case _AppTeam():
-return $default(_that.teamId,_that.teamName,_that.createdBy);case _:
+return $default(_that.teamId,_that.teamName,_that.createdBy,_that.format);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.teamId,_that.teamName,_that.createdBy);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String teamId,  String teamName,  String createdBy)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String teamId,  String teamName,  String createdBy,  String? format)?  $default,) {final _that = this;
 switch (_that) {
 case _AppTeam() when $default != null:
-return $default(_that.teamId,_that.teamName,_that.createdBy);case _:
+return $default(_that.teamId,_that.teamName,_that.createdBy,_that.format);case _:
   return null;
 
 }
@@ -211,12 +212,13 @@ return $default(_that.teamId,_that.teamName,_that.createdBy);case _:
 @JsonSerializable()
 
 class _AppTeam implements AppTeam {
-  const _AppTeam({required this.teamId, required this.teamName, required this.createdBy});
+  const _AppTeam({required this.teamId, required this.teamName, required this.createdBy, this.format});
   factory _AppTeam.fromJson(Map<String, dynamic> json) => _$AppTeamFromJson(json);
 
 @override final  String teamId;
 @override final  String teamName;
 @override final  String createdBy;
+@override final  String? format;
 
 /// Create a copy of AppTeam
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppTeam&&(identical(other.teamId, teamId) || other.teamId == teamId)&&(identical(other.teamName, teamName) || other.teamName == teamName)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppTeam&&(identical(other.teamId, teamId) || other.teamId == teamId)&&(identical(other.teamName, teamName) || other.teamName == teamName)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.format, format) || other.format == format));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,teamId,teamName,createdBy);
+int get hashCode => Object.hash(runtimeType,teamId,teamName,createdBy,format);
 
 @override
 String toString() {
-  return 'AppTeam(teamId: $teamId, teamName: $teamName, createdBy: $createdBy)';
+  return 'AppTeam(teamId: $teamId, teamName: $teamName, createdBy: $createdBy, format: $format)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$AppTeamCopyWith<$Res> implements $AppTeamCopyWith<$Res> {
   factory _$AppTeamCopyWith(_AppTeam value, $Res Function(_AppTeam) _then) = __$AppTeamCopyWithImpl;
 @override @useResult
 $Res call({
- String teamId, String teamName, String createdBy
+ String teamId, String teamName, String createdBy, String? format
 });
 
 
@@ -268,12 +270,13 @@ class __$AppTeamCopyWithImpl<$Res>
 
 /// Create a copy of AppTeam
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? teamId = null,Object? teamName = null,Object? createdBy = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? teamId = null,Object? teamName = null,Object? createdBy = null,Object? format = freezed,}) {
   return _then(_AppTeam(
 teamId: null == teamId ? _self.teamId : teamId // ignore: cast_nullable_to_non_nullable
 as String,teamName: null == teamName ? _self.teamName : teamName // ignore: cast_nullable_to_non_nullable
 as String,createdBy: null == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
-as String,
+as String,format: freezed == format ? _self.format : format // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

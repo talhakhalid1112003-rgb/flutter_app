@@ -54,10 +54,11 @@ class ScoringController extends Notifier<ScoringState?> {
     required AppMatch currentMatch,
     required AppInnings currentInnings,
   }) async {
-    if (state == null) return;
-    if (state!.currentPhase == MatchPhase.completed ||
-        state!.currentPhase == MatchPhase.inningsBreak)
+    if (state == null) {
       return;
+    }
+    if (state!.currentPhase == MatchPhase.completed || state!.currentPhase == MatchPhase.inningsBreak)
+      {return;}
 
     final st = state!;
     state = st.copyWith(isLoading: true, error: null);
@@ -192,8 +193,12 @@ class ScoringController extends Notifier<ScoringState?> {
         // Detect maiden over before clearing
         int runsInOver = newOverBalls.fold(0, (sum, b) {
           int r = b.runs;
-          if (b.extraType == 'wide' || b.extraType == 'no_ball') r += 1;
-          if (b.extraType == 'leg_bye' || b.extraType == 'bye') return sum;
+          if (b.extraType == 'wide' || b.extraType == 'no_ball') {
+            r += 1;
+          }
+          if (b.extraType == 'leg_bye' || b.extraType == 'bye') {
+            return sum;
+          }
           return sum + r;
         });
         if (runsInOver == 0) {
@@ -306,20 +311,25 @@ class ScoringController extends Notifier<ScoringState?> {
     String nonStrikerName,
     String bowlerName,
   ) {
-    if (state == null) return;
+    if (state == null) {
+      return;
+    }
 
     final bStats = Map<String, BatsmanStats>.from(state!.batsmanStats);
-    if (!bStats.containsKey(newStriker))
+    if (!bStats.containsKey(newStriker)) {
       bStats[newStriker] = BatsmanStats.initial(newStriker, strikerName);
-    if (!bStats.containsKey(newNonStriker))
+    }
+    if (!bStats.containsKey(newNonStriker)) {
       bStats[newNonStriker] = BatsmanStats.initial(
         newNonStriker,
         nonStrikerName,
       );
+    }
 
     final bwStats = Map<String, BowlerStats>.from(state!.bowlerStats);
-    if (!bwStats.containsKey(newBowler))
+    if (!bwStats.containsKey(newBowler)) {
       bwStats[newBowler] = BowlerStats.initial(newBowler, bowlerName);
+    }
 
     state = state!.copyWith(
       strikerId: newStriker,
@@ -334,7 +344,9 @@ class ScoringController extends Notifier<ScoringState?> {
   }
 
   Future<void> undo() async {
-    if (!canUndo || state == null) return;
+    if (!canUndo || state == null) {
+      return;
+    }
 
     final st = state!;
     state = st.copyWith(isLoading: true);

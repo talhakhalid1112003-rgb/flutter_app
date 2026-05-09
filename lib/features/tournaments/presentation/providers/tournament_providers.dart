@@ -66,7 +66,7 @@ final tournamentStandingsProvider =
       );
       if (tournament == null) return [];
 
-      final allTeams = await ref.watch(teamsProvider.future);
+      final allTeams = await ref.watch(teamsProvider('cricket').future);
       final tournamentTeams = allTeams
           .where((t) => tournament.teamIds.contains(t.teamId))
           .toList();
@@ -88,10 +88,10 @@ final tournamentStandingsProvider =
       final matchRepo = ref.read(matchRepositoryProvider);
 
       for (var match in tMatches) {
-        if (!standings.containsKey(match.teamAId) ||
-            !standings.containsKey(match.teamBId))
-          continue;
-
+        if (!standings.containsKey(match.teamAId) || !standings.containsKey(match.teamBId))
+          {
+            continue;
+          }
         // Fetch innings
         final inningsList = await matchRepo.watchInnings(match.matchId).first;
         if (inningsList.isEmpty) continue;

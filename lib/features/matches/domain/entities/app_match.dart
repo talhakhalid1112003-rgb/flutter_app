@@ -9,7 +9,7 @@ enum MatchPhase {
   inningsBreak,
   secondInnings,
   superOver,
-  completed
+  completed,
 }
 
 @freezed
@@ -21,6 +21,7 @@ abstract class AppMatch with _$AppMatch {
     String? teamAId,
     String? teamBId,
     String? tournamentId,
+    String? sportId,
     required int overs,
     required String tossWinner,
     required String tossDecision, // 'bat' or 'bowl'
@@ -34,5 +35,6 @@ abstract class AppMatch with _$AppMatch {
     required DateTime createdAt,
   }) = _AppMatch;
 
-  factory AppMatch.fromJson(Map<String, dynamic> json) => _$AppMatchFromJson(json);
+  factory AppMatch.fromJson(Map<String, dynamic> json) =>
+      _$AppMatchFromJson(json);
 }
