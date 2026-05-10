@@ -13,7 +13,9 @@ class MatchHistoryScreen extends ConsumerWidget {
     final matchesAsync = ref.watch(matchesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Easy Cricket Scorer')),
+      appBar: AppBar(
+        title: const Text('Easy Cricket Scorer'),
+      ),
       body: matchesAsync.when(
         data: (matches) {
           final independentMatches = matches.where((m) => m.tournamentId == null).toList();

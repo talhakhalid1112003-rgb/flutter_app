@@ -28,6 +28,7 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
   String? teamAId;
   String? teamBId;
   final oversCtrl = TextEditingController(text: '20');
+  int selectedSets = 20; // For badminton
   String? tossWinner; // 'host' or 'visitor'
   String tossDecision = 'Bat';
 
@@ -44,7 +45,9 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
     final selectedSport = widget.sportId?.toUpperCase() ?? 'CRICKET';
 
     return Scaffold(
-      appBar: AppBar(title: Text('$selectedSport Scorer')),
+      appBar: AppBar(
+        title: Text('$selectedSport Scorer'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -82,7 +85,7 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
             const SizedBox(height: 16),
             _buildTeamSelectionCard(),
             const SizedBox(height: 24),
-            const Text(
+            if (widget.sportId != 'badminton') ...[const Text(
               'Toss won by?',
               style: TextStyle(
                 color: AppTheme.primaryBlue,
@@ -103,8 +106,60 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
             ),
             const SizedBox(height: 8),
             _buildDecisionSelection(),
-            const SizedBox(height: 24),
-            TextField(
+            const SizedBox(height: 24),],
+            if (widget.sportId == 'badminton') ...[const Text(
+              'Points to Win:',
+              style: TextStyle(
+                color: AppTheme.primaryBlue,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [11, 15, 21].map((value) {
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => selectedSets = value),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: selectedSets == value
+                            ? AppTheme.primaryBlue.withAlpha(51)
+                            : Colors.transparent,
+                        border: Border.all(
+                          color: selectedSets == value ? AppTheme.primaryBlue : Colors.white24,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            selectedSets == value
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked,
+                            color: selectedSets == value ? AppTheme.primaryBlue : Colors.white54,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '$value',
+                            style: TextStyle(
+                              color: selectedSets == value ? AppTheme.primaryBlue : Colors.white,
+                              fontWeight: selectedSets == value ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),] else ...[TextField(
               controller: oversCtrl,
               decoration: const InputDecoration(labelText: 'Overs'),
               keyboardType: TextInputType.number,
@@ -121,7 +176,7 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
               child: const Text('Start match'),
             ),
           ],
-        ),
+       ] ),
       ),
     );
   }
@@ -367,15 +422,25 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
   void _startMatch() async {
     final teamAName = teamACtrl.text.trim();
     final teamBName = teamBCtrl.text.trim();
-    if (teamAName.isEmpty || teamBName.isEmpty || tossWinner == null) {
+    
+    // Badminton doesn't need toss winner
+    final isBadminton = widget.sportId == 'badminton';
+    if (teamAName.isEmpty || teamBName.isEmpty || (!isBadminton && tossWinner == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter team names and select toss winner'),
+        SnackBar(
+          content: Text(isBadminton ? 'Please enter team names' : 'Please enter team names and select toss winner'),
         ),
       );
       return;
     }
-    int overs = int.tryParse(oversCtrl.text) ?? 20;
+    
+    // Set defaults for badminton
+    if (isBadminton) {
+      tossWinner ??= 'host';
+      tossDecision = 'Bat';
+    }
+    
+    int overs = isBadminton ? selectedSets : (int.tryParse(oversCtrl.text) ?? 20);
 
     final matchId = const Uuid().v4();
     final finalTeamAId = teamAId ?? const Uuid().v4();
@@ -462,7 +527,11 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
     }
 
     if (mounted) {
-      context.go('/match-squad/$matchId/$inningsId');
+      if (widget.sportId == 'badminton') {
+        context.go('/badminton-match-score/$matchId');
+      } else {
+        context.go('/match-squad/$matchId/$inningsId');
+      }
     }
   }
 }

@@ -63,7 +63,9 @@ class _CreateTournamentScreenState
     final teamsAsync = ref.watch(teamsProvider('cricket'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Start New Tournament')),
+      appBar: AppBar(
+        title: const Text('Start New Tournament'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

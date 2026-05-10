@@ -19,7 +19,7 @@ class BadmintonFormatScreen extends StatelessWidget {
               'Choose a badminton format before you continue.',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 24),] + [
             ElevatedButton(
               onPressed: () {
                 context.go('/new-match?sportId=badminton&teamFormat=singles');

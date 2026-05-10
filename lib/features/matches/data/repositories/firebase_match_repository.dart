@@ -40,7 +40,7 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
       final data = <String, dynamic>{
         ...match.toJson(),
         'sportId': sportId,
-        if (createdBy != null) 'createdBy': createdBy,
+        'createdBy': ?createdBy,
       };
       await _firestore.collection('matches').doc(match.matchId).set(data);
     } catch (e) {

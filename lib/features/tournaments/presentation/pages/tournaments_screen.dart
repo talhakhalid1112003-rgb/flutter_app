@@ -12,7 +12,9 @@ class TournamentsScreen extends ConsumerWidget {
     final tournamentsAsync = ref.watch(tournamentsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Easy Cricket Scorer')),
+      appBar: AppBar(
+        title: const Text('Easy Cricket Scorer'),
+      ),
       body: tournamentsAsync.when(
         data: (tournaments) {
           if (tournaments.isEmpty) {

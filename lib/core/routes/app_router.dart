@@ -13,6 +13,7 @@ import 'package:scoring_app/features/sport_selection/presentation/pages/badminto
 import 'package:scoring_app/features/sport_selection/presentation/pages/sport_selection_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/live_scoring_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/partnership_screen.dart';
+import 'package:scoring_app/features/scoring/presentation/pages/badminton_match_score.dart';
 import 'package:scoring_app/features/auth/screens/login_screen.dart';
 import 'package:scoring_app/features/auth/screens/signup_screen.dart';
 
@@ -117,6 +118,14 @@ final appRouter = GoRouter(
         return MatchSquadScreen(
           matchId: state.pathParameters['matchId']!,
           inningsId: state.pathParameters['inningsId']!,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/badminton-match-score/:matchId',
+      builder: (context, state) {
+        return BadmintonMatchScoreScreen(
+          matchId: state.pathParameters['matchId']!,
         );
       },
     ),

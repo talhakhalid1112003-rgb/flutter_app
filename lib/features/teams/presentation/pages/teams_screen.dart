@@ -23,7 +23,9 @@ class _TeamsScreenState extends ConsumerState<TeamsScreen> {
     final teamsAsync = ref.watch(teamsProvider(_selectedSport));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Teams & Players')),
+      appBar: AppBar(
+        title: const Text('Teams & Players'),
+      ),
       body: Column(
         children: [
           Padding(
@@ -136,7 +138,7 @@ class _TeamsScreenState extends ConsumerState<TeamsScreen> {
                 if (_selectedSport == 'badminton') ...[
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: selectedFormat,
+                    initialValue: selectedFormat,
                     items: ['Singles', 'Doubles']
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),

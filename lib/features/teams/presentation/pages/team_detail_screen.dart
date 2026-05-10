@@ -24,7 +24,9 @@ class TeamDetailScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Players')),
+      appBar: AppBar(
+        title: const Text('Players'),
+      ),
       body: playersAsync.when(
         data: (players) {
           if (players.isEmpty) {
