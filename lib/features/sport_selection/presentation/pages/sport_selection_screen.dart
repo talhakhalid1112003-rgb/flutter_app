@@ -11,7 +11,7 @@ class SportSelectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(firebaseAuthProvider).currentUser;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Choose a sport'),
@@ -39,7 +39,8 @@ class SportSelectionScreen extends ConsumerWidget {
                       radius: 28,
                       backgroundColor: Colors.blue.shade100,
                       child: Text(
-                        currentUser?.email?.substring(0, 1).toUpperCase() ?? 'U',
+                        currentUser?.email?.substring(0, 1).toUpperCase() ??
+                            'U',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -80,10 +81,7 @@ class SportSelectionScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             const Text(
               'Select the game for which you want to calculate the score.',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Expanded(
@@ -103,13 +101,18 @@ class SportSelectionScreen extends ConsumerWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        Future.microtask(() {
-                          if (sport.type == SportType.badminton) {
-                            context.go('/badminton-format-screen');
-                            return;
-                          }
-                          context.go('/new-match?sportId=${sport.type.name}');
-                        });
+                        if (sport.type == SportType.badminton) {
+                          context.go(
+                            sport.routePath,
+                            extra: <String, dynamic>{
+                              'sport': sport,
+                              'sportId': sport.type.name,
+                              'selectedFormat': 'Singles',
+                            },
+                          );
+                          return;
+                        }
+                        context.go('/new-match?sportId=${sport.type.name}');
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -118,8 +121,14 @@ class SportSelectionScreen extends ConsumerWidget {
                           children: [
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor: sport.accentColor.withValues(alpha: 0.18),
-                              child: Icon(sport.icon, color: sport.accentColor, size: 28),
+                              backgroundColor: sport.accentColor.withValues(
+                                alpha: 0.18,
+                              ),
+                              child: Icon(
+                                sport.icon,
+                                color: sport.accentColor,
+                                size: 28,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             Text(

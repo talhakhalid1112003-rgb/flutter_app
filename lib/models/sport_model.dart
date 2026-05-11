@@ -35,7 +35,7 @@ class SportModel {
 
   String get routePath => switch (type) {
     SportType.cricket => '/dashboard/cricket',
-    SportType.badminton => '/dashboard/badminton',
+    SportType.badminton => '/badminton/create',
     SportType.tennis => '/dashboard/tennis',
     SportType.football => '/dashboard/football',
   };
@@ -84,10 +84,7 @@ class SportModel {
     formatValue: 'Goals • Cards',
   );
 
-  static const List<SportModel> allSports = [
-    cricket,
-    badminton,
-  ];
+  static const List<SportModel> allSports = [cricket, badminton];
 
   static SportModel fromStorageValue(String? value) {
     return allSports.firstWhere(

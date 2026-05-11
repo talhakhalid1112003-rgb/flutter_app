@@ -9,13 +9,17 @@ import 'package:scoring_app/features/tournaments/presentation/pages/tournament_d
 import 'package:scoring_app/features/teams/presentation/pages/teams_screen.dart';
 import 'package:scoring_app/features/teams/presentation/pages/team_detail_screen.dart';
 import 'package:scoring_app/features/matches/presentation/pages/match_history_screen.dart';
-import 'package:scoring_app/features/sport_selection/presentation/pages/badminton_format_screen.dart';
 import 'package:scoring_app/features/sport_selection/presentation/pages/sport_selection_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/live_scoring_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/partnership_screen.dart';
-import 'package:scoring_app/features/scoring/presentation/pages/badminton_match_score.dart';
 import 'package:scoring_app/features/auth/screens/login_screen.dart';
 import 'package:scoring_app/features/auth/screens/signup_screen.dart';
+import 'package:scoring_app/features/badminton/data/models/badminton_match_model.dart';
+import 'package:scoring_app/features/badminton/presentation/pages/badminton_history_screen.dart';
+import 'package:scoring_app/features/badminton/presentation/pages/badminton_match_create_screen.dart';
+import 'package:scoring_app/features/badminton/presentation/pages/badminton_match_screen.dart';
+import 'package:scoring_app/features/badminton/presentation/pages/badminton_teams_screen.dart';
+import 'package:scoring_app/features/badminton/presentation/pages/badminton_tournament_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -26,7 +30,9 @@ final appRouter = GoRouter(
         return '/login';
       }
     } else {
-      if (state.uri.path == '/login' || state.uri.path == '/signup' || state.uri.path == '/') {
+      if (state.uri.path == '/login' ||
+          state.uri.path == '/signup' ||
+          state.uri.path == '/') {
         return '/sport-selection';
       }
     }
@@ -74,8 +80,10 @@ final appRouter = GoRouter(
                   builder: (context, state) {
                     return TeamDetailScreen(
                       teamId: state.pathParameters['id']!,
-                      sportId: state.uri.queryParameters['sportId'] ?? 'cricket',
-                      selectedFormat: state.uri.queryParameters['selectedFormat'],
+                      sportId:
+                          state.uri.queryParameters['sportId'] ?? 'cricket',
+                      selectedFormat:
+                          state.uri.queryParameters['selectedFormat'],
                     );
                   },
                 ),
@@ -99,8 +107,57 @@ final appRouter = GoRouter(
       builder: (context, state) => const SportSelectionScreen(),
     ),
     GoRoute(
+      path: '/badminton/create',
+      builder: (context, state) => const BadmintonMatchCreateScreen(),
+    ),
+    GoRoute(
+      path: '/badminton/tournament',
+      builder: (context, state) => const BadmintonTournamentScreen(),
+    ),
+    GoRoute(
+      path: '/badminton/teams',
+      builder: (context, state) => const BadmintonTeamsScreen(),
+    ),
+    GoRoute(
+      path: '/badminton/history',
+      builder: (context, state) => const BadmintonHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/badminton/match/:matchId',
+      builder: (context, state) {
+        final extra = state.extra;
+        return BadmintonMatchScreen(
+          matchId: state.pathParameters['matchId']!,
+          initialMatch: extra is BadmintonMatchModel ? extra : null,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/dashboard/badminton',
+      builder: (context, state) => const BadmintonMatchCreateScreen(),
+    ),
+    GoRoute(
+      path: '/badminton-match-create',
+      builder: (context, state) => const BadmintonMatchCreateScreen(),
+    ),
+    GoRoute(
+      path: '/badminton-history',
+      builder: (context, state) => const BadmintonHistoryScreen(),
+    ),
+    GoRoute(
       path: '/badminton-format-screen',
-      builder: (context, state) => const BadmintonFormatScreen(),
+      builder: (context, state) => const BadmintonMatchCreateScreen(),
+    ),
+    GoRoute(
+      path: '/badminton-match-score/:matchId',
+      builder: (context, state) {
+        return BadmintonMatchScreen(
+          matchId: state.pathParameters['matchId']!,
+          initialMatch: state.extra is BadmintonMatchModel
+              ? state.extra as BadmintonMatchModel
+              : null,
+        );
+      },
     ),
     GoRoute(
       path: '/create-tournament',
@@ -109,7 +166,9 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/tournament-dashboard/:id',
       builder: (context, state) {
-        return TournamentDashboardScreen(tournamentId: state.pathParameters['id']!);
+        return TournamentDashboardScreen(
+          tournamentId: state.pathParameters['id']!,
+        );
       },
     ),
     GoRoute(
@@ -118,14 +177,6 @@ final appRouter = GoRouter(
         return MatchSquadScreen(
           matchId: state.pathParameters['matchId']!,
           inningsId: state.pathParameters['inningsId']!,
-        );
-      },
-    ),
-    GoRoute(
-      path: '/badminton-match-score/:matchId',
-      builder: (context, state) {
-        return BadmintonMatchScoreScreen(
-          matchId: state.pathParameters['matchId']!,
         );
       },
     ),
@@ -147,13 +198,7 @@ final appRouter = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: '/signup',
-      builder: (context, state) => const SignupScreen(),
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
+    GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
+    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
   ],
 );
