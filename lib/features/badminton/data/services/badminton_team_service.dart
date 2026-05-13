@@ -8,20 +8,72 @@ class BadmintonTeamService {
 
   static const String collectionName = 'Badminton_Teams';
 
+  List<BadmintonTeamModel> _mapUniqueTeams(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    final teamsById = <String, BadmintonTeamModel>{};
+
+    for (final doc in snapshot.docs) {
+      final team = BadmintonTeamModel.fromMap(
+        doc.data(),
+        documentId: doc.id,
+      );
+      if (team.id.isNotEmpty) {
+        teamsById[team.id] = team;
+      }
+    }
+
+    final teams = teamsById.values.toList();
+    teams.sort((left, right) => right.createdAt.compareTo(left.createdAt));
+    return teams;
+  }
+
   Stream<List<BadmintonTeamModel>> watchUserTeams(String userId) {
     return _firestore
         .collection(collectionName)
         .where('userId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) {
-          final teams = snapshot.docs
-              .map((doc) => BadmintonTeamModel.fromMap(doc.data()))
-              .toList();
-          teams.sort(
-            (left, right) => right.createdAt.compareTo(left.createdAt),
-          );
-          return teams;
+          return _mapUniqueTeams(snapshot);
         });
+  }
+
+  /// Fetch all badminton teams from Firestore (for dropdown selection in doubles mode)
+  Future<List<BadmintonTeamModel>> fetchAllTeams() async {
+    try {
+      final snapshot = await _firestore
+          .collection(collectionName)
+          .get();
+
+      return _mapUniqueTeams(snapshot);
+    } catch (e) {
+      throw Exception('Failed to fetch badminton teams: $e');
+    }
+  }
+
+  /// Stream all badminton teams from Firestore (for real-time updates)
+  Stream<List<BadmintonTeamModel>> streamAllTeams() {
+    return _firestore
+        .collection(collectionName)
+        .snapshots()
+        .map((snapshot) {
+          return _mapUniqueTeams(snapshot);
+        });
+  }
+
+  /// Get a specific team by ID
+  Future<BadmintonTeamModel?> getTeamById(String teamId) async {
+    try {
+      final doc = await _firestore
+          .collection(collectionName)
+          .doc(teamId)
+          .get();
+      
+      if (doc.exists && doc.data() != null) {
+        return BadmintonTeamModel.fromMap(doc.data()!, documentId: doc.id);
+      }
+      return null;
+    } catch (e) {
+      throw Exception('Failed to fetch team: $e');
+    }
   }
 
   Future<BadmintonTeamModel> saveTeam(BadmintonTeamModel team) async {

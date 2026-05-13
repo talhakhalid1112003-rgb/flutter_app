@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:scoring_app/core/config/app_theme.dart';
 import 'package:scoring_app/features/badminton/data/models/badminton_match_model.dart';
 import 'package:scoring_app/features/badminton/data/models/badminton_round_summary.dart';
+import 'package:scoring_app/features/badminton/data/models/badminton_team_model.dart';
 import 'package:scoring_app/features/badminton/data/services/badminton_history_service.dart';
+import 'package:scoring_app/features/badminton/data/services/badminton_team_service.dart';
 import 'package:scoring_app/features/badminton/presentation/widgets/badminton_bottom_navigation_bar.dart';
 
 class BadmintonMatchCreateScreen extends StatefulWidget {
@@ -25,14 +27,18 @@ class _BadmintonMatchCreateScreenState
     FirebaseFirestore.instance,
   );
 
+  final BadmintonTeamService _teamService = BadmintonTeamService(
+    FirebaseFirestore.instance,
+  );
+
   final _singlePlayerAController = TextEditingController();
   final _singlePlayerBController = TextEditingController();
-  final _teamANameController = TextEditingController();
-  final _teamBNameController = TextEditingController();
-  final _teamAPlayer1Controller = TextEditingController();
-  final _teamAPlayer2Controller = TextEditingController();
-  final _teamBPlayer1Controller = TextEditingController();
-  final _teamBPlayer2Controller = TextEditingController();
+
+  // Doubles mode team selection
+  String? _selectedTeamAId;
+  String? _selectedTeamBId;
+  BadmintonTeamModel? _selectedTeamA;
+  BadmintonTeamModel? _selectedTeamB;
 
   String _matchType = 'Singles';
   int _selectedPoints = 21;
@@ -42,12 +48,6 @@ class _BadmintonMatchCreateScreenState
   void dispose() {
     _singlePlayerAController.dispose();
     _singlePlayerBController.dispose();
-    _teamANameController.dispose();
-    _teamBNameController.dispose();
-    _teamAPlayer1Controller.dispose();
-    _teamAPlayer2Controller.dispose();
-    _teamBPlayer1Controller.dispose();
-    _teamBPlayer2Controller.dispose();
     super.dispose();
   }
 
@@ -115,23 +115,7 @@ class _BadmintonMatchCreateScreenState
                           ),
                         ],
                       )
-                    : Column(
-                        children: [
-                          _buildDoubleTeamCard(
-                            teamLabel: 'Team A',
-                            teamNameController: _teamANameController,
-                            player1Controller: _teamAPlayer1Controller,
-                            player2Controller: _teamAPlayer2Controller,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildDoubleTeamCard(
-                            teamLabel: 'Team B',
-                            teamNameController: _teamBNameController,
-                            player1Controller: _teamBPlayer1Controller,
-                            player2Controller: _teamBPlayer2Controller,
-                          ),
-                        ],
-                      ),
+                    : _buildDoublesTeamSelection(),
               ),
             ),
             const SizedBox(height: 20),
@@ -191,6 +175,249 @@ class _BadmintonMatchCreateScreenState
     );
   }
 
+  /// Build doubles team selection UI with StreamBuilder and dropdowns
+  Widget _buildDoublesTeamSelection() {
+    return StreamBuilder<List<BadmintonTeamModel>>(
+      stream: _teamService.streamAllTeams(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              'Error loading teams: ${snapshot.error}',
+              style: const TextStyle(color: Colors.redAccent),
+            ),
+          );
+        }
+
+        final teams = snapshot.data ?? <BadmintonTeamModel>[];
+
+        if (teams.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              'No teams available. Please create teams first.',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14,
+              ),
+            ),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Team A Dropdown
+            _buildTeamDropdown(
+              teamLabel: 'Team A',
+              teams: teams,
+              selectedTeamId: _selectedTeamAId,
+              selectedTeam: _selectedTeamA,
+              excludedTeamId: _selectedTeamBId,
+              onChanged: (teamId) {
+                setState(() {
+                  _selectedTeamAId = teamId;
+                  _selectedTeamA = _teamFromId(teams, teamId);
+                  if (_selectedTeamBId == teamId) {
+                    _selectedTeamBId = null;
+                    _selectedTeamB = null;
+                  }
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            // Team A Players Display
+            if (_selectedTeamA != null)
+              _buildTeamPlayersDisplay(
+                teamName: _selectedTeamA!.teamName,
+                players: _selectedTeamA!.players,
+              ),
+            if (_selectedTeamA != null) const SizedBox(height: 16),
+            // Team B Dropdown
+            _buildTeamDropdown(
+              teamLabel: 'Team B',
+              teams: teams,
+              selectedTeamId: _selectedTeamBId,
+              selectedTeam: _selectedTeamB,
+              excludedTeamId: _selectedTeamAId,
+              onChanged: (teamId) {
+                setState(() {
+                  _selectedTeamBId = teamId;
+                  _selectedTeamB = _teamFromId(teams, teamId);
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            // Team B Players Display
+            if (_selectedTeamB != null)
+              _buildTeamPlayersDisplay(
+                teamName: _selectedTeamB!.teamName,
+                players: _selectedTeamB!.players,
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Build dropdown for team selection
+  Widget _buildTeamDropdown({
+    required String teamLabel,
+    required List<BadmintonTeamModel> teams,
+    required String? selectedTeamId,
+    required BadmintonTeamModel? selectedTeam,
+    required ValueChanged<String?> onChanged,
+    required String? excludedTeamId,
+  }) {
+    final validSelectedTeamId = teams.any((team) => team.id == selectedTeamId)
+        ? selectedTeamId
+        : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          teamLabel,
+          style: const TextStyle(
+            color: AppTheme.primaryBlue,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: validSelectedTeamId,
+          onChanged: (team) {
+            onChanged(team);
+          },
+          items: teams
+              .map(
+                (team) => DropdownMenuItem<String>(
+                  value: team.id,
+                  enabled: team.id != excludedTeamId,
+                  child: Opacity(
+                    opacity: team.id != excludedTeamId ? 1.0 : 0.5,
+                    child: Text(team.teamName),
+                  ),
+                ),
+              )
+              .toList(),
+          decoration: InputDecoration(
+            hintText: 'Select $teamLabel',
+            filled: true,
+            fillColor: AppTheme.cardColorDark,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Colors.white24),
+            ),
+          ),
+          dropdownColor: AppTheme.cardColorDark,
+          style: const TextStyle(color: Colors.white),
+        ),
+        if (selectedTeam != null && excludedTeamId != null && selectedTeam.id == excludedTeamId)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Same team cannot be selected twice',
+              style: TextStyle(color: Colors.red[400], fontSize: 12),
+            ),
+          ),
+      ],
+    );
+  }
+
+  BadmintonTeamModel? _teamFromId(
+    List<BadmintonTeamModel> teams,
+    String? teamId,
+  ) {
+    if (teamId == null) {
+      return null;
+    }
+
+    for (final team in teams) {
+      if (team.id == teamId) {
+        return team;
+      }
+    }
+    return null;
+  }
+
+  /// Build player display for selected team
+  Widget _buildTeamPlayersDisplay({
+    required String teamName,
+    required List<String> players,
+  }) {
+    return Card(
+      color: AppTheme.cardColorDark.withValues(alpha: 0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$teamName Players',
+              style: const TextStyle(
+                color: AppTheme.primaryBlue,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...players
+                .asMap()
+                .entries
+                .map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${entry.key + 1}',
+                              style: const TextStyle(
+                                color: AppTheme.primaryBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          entry.value,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildToggleCard(
     String title,
     String subtitle, {
@@ -240,47 +467,6 @@ class _BadmintonMatchCreateScreenState
             Text(
               subtitle,
               style: const TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDoubleTeamCard({
-    required String teamLabel,
-    required TextEditingController teamNameController,
-    required TextEditingController player1Controller,
-    required TextEditingController player2Controller,
-  }) {
-    return Card(
-      color: AppTheme.cardColorDark,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              teamLabel,
-              style: const TextStyle(
-                color: AppTheme.primaryBlue,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: teamNameController,
-              decoration: InputDecoration(labelText: '$teamLabel Name'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: player1Controller,
-              decoration: InputDecoration(labelText: '$teamLabel - Player 1'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: player2Controller,
-              decoration: InputDecoration(labelText: '$teamLabel - Player 2'),
             ),
           ],
         ),
@@ -359,23 +545,20 @@ class _BadmintonMatchCreateScreenState
       );
     }
 
-    final teamAName = _teamANameController.text.trim();
-    final teamBName = _teamBNameController.text.trim();
-    final teamAPlayer1 = _teamAPlayer1Controller.text.trim();
-    final teamAPlayer2 = _teamAPlayer2Controller.text.trim();
-    final teamBPlayer1 = _teamBPlayer1Controller.text.trim();
-    final teamBPlayer2 = _teamBPlayer2Controller.text.trim();
-
-    if ([
-      teamAName,
-      teamBName,
-      teamAPlayer1,
-      teamAPlayer2,
-      teamBPlayer1,
-      teamBPlayer2,
-    ].any((value) => value.isEmpty)) {
+    // Doubles mode
+    if (_selectedTeamA == null || _selectedTeamB == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete all doubles fields.')),
+        const SnackBar(content: Text('Please select both Team A and Team B.')),
+      );
+      return null;
+    }
+
+    // Validation: Same team cannot be selected twice
+    if (_selectedTeamA!.id == _selectedTeamB!.id) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Team A and Team B must be different teams.'),
+        ),
       );
       return null;
     }
@@ -385,11 +568,11 @@ class _BadmintonMatchCreateScreenState
       userId: userId,
       matchType: _matchType,
       selectedPoints: _selectedPoints,
-      teamAName: teamAName,
-      teamBName: teamBName,
+      teamAName: _selectedTeamA!.teamName,
+      teamBName: _selectedTeamB!.teamName,
       players: <String, List<String>>{
-        'teamA': <String>[teamAPlayer1, teamAPlayer2],
-        'teamB': <String>[teamBPlayer1, teamBPlayer2],
+        'teamA': _selectedTeamA!.players,
+        'teamB': _selectedTeamB!.players,
       },
       scores: <String, int>{'teamA': 0, 'teamB': 0},
       roundsWon: <String, int>{'teamA': 0, 'teamB': 0},

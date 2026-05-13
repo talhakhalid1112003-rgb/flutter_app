@@ -17,10 +17,15 @@ class BadmintonTeamModel {
   final List<String> players;
   final DateTime createdAt;
 
-  factory BadmintonTeamModel.fromMap(Map<String, dynamic> map) {
+  String get id => teamId;
+
+  factory BadmintonTeamModel.fromMap(
+    Map<String, dynamic> map, {
+    String? documentId,
+  }) {
     final createdAtValue = map['createdAt'];
     return BadmintonTeamModel(
-      teamId: (map['teamId'] ?? '').toString(),
+      teamId: (documentId ?? map['teamId'] ?? '').toString(),
       userId: (map['userId'] ?? '').toString(),
       teamType: (map['teamType'] ?? 'Singles').toString(),
       teamName: (map['teamName'] ?? '').toString(),
@@ -51,6 +56,17 @@ class BadmintonTeamModel {
       createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is BadmintonTeamModel &&
+            runtimeType == other.runtimeType &&
+            id == other.id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
