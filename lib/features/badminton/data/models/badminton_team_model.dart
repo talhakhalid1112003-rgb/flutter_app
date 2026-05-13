@@ -24,14 +24,15 @@ class BadmintonTeamModel {
     String? documentId,
   }) {
     final createdAtValue = map['createdAt'];
+    final playersData = map['player'] as List<dynamic>? ??
+        map['players'] as List<dynamic>? ??
+        const <dynamic>[];
     return BadmintonTeamModel(
       teamId: (documentId ?? map['teamId'] ?? '').toString(),
       userId: (map['userId'] ?? '').toString(),
-      teamType: (map['teamType'] ?? 'Singles').toString(),
+      teamType: (map['teamType'] ?? 'Doubles').toString(),
       teamName: (map['teamName'] ?? '').toString(),
-      players: List<String>.from(
-        map['players'] as List<dynamic>? ?? const <dynamic>[],
-      ),
+      players: List<String>.from(playersData),
       createdAt: createdAtValue is Timestamp
           ? createdAtValue.toDate()
           : DateTime.tryParse(createdAtValue?.toString() ?? '') ??
@@ -70,11 +71,9 @@ class BadmintonTeamModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'teamId': teamId,
       'userId': userId,
-      'teamType': teamType,
       'teamName': teamName,
-      'players': players,
+      'player': players,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }

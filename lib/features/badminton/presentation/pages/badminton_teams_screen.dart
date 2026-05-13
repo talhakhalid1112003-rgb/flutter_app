@@ -21,28 +21,18 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
     FirebaseFirestore.instance,
   );
   final _formKey = GlobalKey<FormState>();
-  final _teamANameController = TextEditingController();
-  final _teamBNameController = TextEditingController();
+  final _teamNameController = TextEditingController();
   final _player1Controller = TextEditingController();
   final _player2Controller = TextEditingController();
-  final _player3Controller = TextEditingController();
-  final _player4Controller = TextEditingController();
-  final _singlePlayerAController = TextEditingController();
-  final _singlePlayerBController = TextEditingController();
 
   String _teamType = 'Singles';
   bool _saving = false;
 
   @override
   void dispose() {
-    _teamANameController.dispose();
-    _teamBNameController.dispose();
+    _teamNameController.dispose();
     _player1Controller.dispose();
     _player2Controller.dispose();
-    _player3Controller.dispose();
-    _player4Controller.dispose();
-    _singlePlayerAController.dispose();
-    _singlePlayerBController.dispose();
     super.dispose();
   }
 
@@ -66,7 +56,7 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Save badminton players for singles and doubles separately.',
+                  'Singles teams are not saved. Only doubles teams are stored in Firestore.',
                   style: const TextStyle(color: Colors.white70),
                 ),
               ),
@@ -95,28 +85,17 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: _teamType == 'Singles'
-                        ? [
-                            TextFormField(
-                              controller: _singlePlayerAController,
-                              decoration: const InputDecoration(
-                                labelText: 'Player A Name',
-                              ),
-                              validator: _requiredValidator,
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _singlePlayerBController,
-                              decoration: const InputDecoration(
-                                labelText: 'Player B Name',
-                              ),
-                              validator: _requiredValidator,
+                        ? const [
+                            Text(
+                              'Singles mode does not save teams to Firestore.',
+                              style: TextStyle(color: Colors.white70),
                             ),
                           ]
                         : [
                             TextFormField(
-                              controller: _teamANameController,
+                              controller: _teamNameController,
                               decoration: const InputDecoration(
-                                labelText: 'Team A Name',
+                                labelText: 'Team Name',
                               ),
                               validator: _requiredValidator,
                             ),
@@ -124,7 +103,7 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
                             TextFormField(
                               controller: _player1Controller,
                               decoration: const InputDecoration(
-                                labelText: 'Team A - Player 1',
+                                labelText: 'Player 1',
                               ),
                               validator: _requiredValidator,
                             ),
@@ -132,31 +111,7 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
                             TextFormField(
                               controller: _player2Controller,
                               decoration: const InputDecoration(
-                                labelText: 'Team A - Player 2',
-                              ),
-                              validator: _requiredValidator,
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _teamBNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Team B Name',
-                              ),
-                              validator: _requiredValidator,
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _player3Controller,
-                              decoration: const InputDecoration(
-                                labelText: 'Team B - Player 1',
-                              ),
-                              validator: _requiredValidator,
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              controller: _player4Controller,
-                              decoration: const InputDecoration(
-                                labelText: 'Team B - Player 2',
+                                labelText: 'Player 2',
                               ),
                               validator: _requiredValidator,
                             ),
@@ -166,11 +121,12 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _saving ? null : () => _saveTeam(userId),
-              icon: const Icon(Icons.save),
-              label: Text(_saving ? 'Saving...' : 'Save Team'),
-            ),
+            if (_teamType == 'Doubles')
+              ElevatedButton.icon(
+                onPressed: _saving ? null : () => _saveDoubleTeam(userId),
+                icon: const Icon(Icons.save),
+                label: Text(_saving ? 'Saving...' : 'Save Team'),
+              ),
             const SizedBox(height: 20),
             const Text(
               'Saved Teams',
@@ -190,7 +146,7 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
               )
             else
               StreamBuilder<List<BadmintonTeamModel>>(
-                stream: _service.watchUserTeams(userId),
+                stream: _service.watchCurrentUserTeams(userId),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Card(
@@ -237,7 +193,7 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          team.teamType,
+                                          team.teamName,
                                           style: const TextStyle(
                                             color: AppTheme.primaryBlue,
                                             fontSize: 16,
@@ -246,7 +202,7 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
                                         ),
                                       ),
                                       Text(
-                                        team.teamName,
+                                        team.players.length == 2 ? 'Doubles' : team.teamType,
                                         style: const TextStyle(
                                           color: Colors.white70,
                                         ),
@@ -325,48 +281,56 @@ class _BadmintonTeamsScreenState extends State<BadmintonTeamsScreen> {
     return null;
   }
 
-  Future<void> _saveTeam(String? userId) async {
+  Future<void> _saveDoubleTeam(String? userId) async {
     if (userId == null) {
+      return;
+    }
+    if (_teamType != 'Doubles') {
       return;
     }
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
 
+    final teamName = _teamNameController.text.trim();
+    final player1 = _player1Controller.text.trim();
+    final player2 = _player2Controller.text.trim();
+
+    if (teamName.isEmpty || player1.isEmpty || player2.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('All doubles fields are required.')),
+      );
+      return;
+    }
+
+    if (player1 == player2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Player names must be different.')),
+      );
+      return;
+    }
+
     setState(() => _saving = true);
     try {
-      final team = _teamType == 'Singles'
-          ? BadmintonTeamModel(
-              teamId: '',
-              userId: userId,
-              teamType: 'Singles',
-              teamName:
-                  '${_singlePlayerAController.text.trim()} & ${_singlePlayerBController.text.trim()}',
-              players: [
-                _singlePlayerAController.text.trim(),
-                _singlePlayerBController.text.trim(),
-              ],
-              createdAt: DateTime.now(),
-            )
-          : BadmintonTeamModel(
-              teamId: '',
-              userId: userId,
-              teamType: 'Doubles',
-              teamName:
-                  '${_teamANameController.text.trim()} vs ${_teamBNameController.text.trim()}',
-              players: [
-                _player1Controller.text.trim(),
-                _player2Controller.text.trim(),
-                _player3Controller.text.trim(),
-                _player4Controller.text.trim(),
-              ],
-              createdAt: DateTime.now(),
-            );
-      await _service.saveTeam(team);
+      final currentTeams = await _service.fetchTeams(userId: userId);
+      final duplicateTeamName = currentTeams.any(
+        (team) => team.teamName.toLowerCase() == teamName.toLowerCase(),
+      );
+      if (duplicateTeamName) {
+        throw Exception('Team name already exists for this user.');
+      }
+
+      await _service.saveDoubleTeam(
+        teamName: teamName,
+        players: <String>[player1, player2],
+      );
       if (!mounted) {
         return;
       }
       _formKey.currentState?.reset();
+      _teamNameController.clear();
+      _player1Controller.clear();
+      _player2Controller.clear();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Badminton team saved.')));

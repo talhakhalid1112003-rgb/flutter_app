@@ -177,8 +177,22 @@ class _BadmintonMatchCreateScreenState
 
   /// Build doubles team selection UI with StreamBuilder and dropdowns
   Widget _buildDoublesTeamSelection() {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(
+          'Sign in to load your doubles teams.',
+          style: TextStyle(
+            color: Colors.grey[400],
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
+
     return StreamBuilder<List<BadmintonTeamModel>>(
-      stream: _teamService.streamAllTeams(),
+      stream: _teamService.watchCurrentUserTeams(userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
