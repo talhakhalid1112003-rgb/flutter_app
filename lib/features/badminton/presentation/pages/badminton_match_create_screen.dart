@@ -307,7 +307,7 @@ class _BadmintonMatchCreateScreenState
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: validSelectedTeamId,
+          initialValue: validSelectedTeamId,
           onChanged: (team) {
             onChanged(team);
           },
@@ -425,7 +425,7 @@ class _BadmintonMatchCreateScreenState
                     ),
                   ),
                 )
-                .toList(),
+                ,
           ],
         ),
       ),
