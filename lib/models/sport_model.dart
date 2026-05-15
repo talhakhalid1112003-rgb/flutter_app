@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoring_app/constants/app_colors.dart';
 
-enum SportType { cricket, badminton, tennis, football }
+enum SportType { cricket, badminton }
 
 class SportModel {
   const SportModel({
@@ -29,15 +29,15 @@ class SportModel {
   String get routeName => switch (type) {
     SportType.cricket => 'cricketDashboard',
     SportType.badminton => 'badmintonDashboard',
-    SportType.tennis => 'tennisDashboard',
-    SportType.football => 'footballDashboard',
+    // SportType.tennis => 'tennisDashboard',
+    // SportType.football => 'footballDashboard',
   };
 
   String get routePath => switch (type) {
     SportType.cricket => '/dashboard/cricket',
-    SportType.badminton => '/badminton/create',
-    SportType.tennis => '/dashboard/tennis',
-    SportType.football => '/dashboard/football',
+    SportType.badminton => '/dashboard/badminton',
+    // SportType.tennis => '/dashboard/tennis',
+    // SportType.football => '/dashboard/football',
   };
 
   static const SportModel cricket = SportModel(
@@ -62,27 +62,27 @@ class SportModel {
     formatValue: 'Sets • Points',
   );
 
-  static const SportModel tennis = SportModel(
-    type: SportType.tennis,
-    displayName: 'Tennis',
-    dashboardLabel: 'Tennis Dashboard',
-    subtitle: 'Score sets, games and points with a clean match flow.',
-    icon: Icons.sports_tennis_outlined,
-    accentColor: Color(0xFF7CE0B5),
-    formatLabel: 'Format',
-    formatValue: 'Sets • Games • Points',
-  );
+  // static const SportModel tennis = SportModel(
+  //   type: SportType.tennis,
+  //   displayName: 'Tennis',
+  //   dashboardLabel: 'Tennis Dashboard',
+  //   subtitle: 'Score sets, games and points with a clean match flow.',
+  //   icon: Icons.sports_tennis_outlined,
+  //   accentColor: Color(0xFF7CE0B5),
+  //   formatLabel: 'Format',
+  //   formatValue: 'Sets • Games • Points',
+  // );
 
-  static const SportModel football = SportModel(
-    type: SportType.football,
-    displayName: 'Football',
-    dashboardLabel: 'Football Dashboard',
-    subtitle: 'Capture goals, cards and match timing at a glance.',
-    icon: Icons.sports_soccer,
-    accentColor: Color(0xFF8AD16E),
-    formatLabel: 'Format',
-    formatValue: 'Goals • Cards',
-  );
+  // static const SportModel football = SportModel(
+  //   type: SportType.football,
+  //   displayName: 'Football',
+  //   dashboardLabel: 'Football Dashboard',
+  //   subtitle: 'Capture goals, cards and match timing at a glance.',
+  //   icon: Icons.sports_soccer,
+  //   accentColor: Color(0xFF8AD16E),
+  //   formatLabel: 'Format',
+  //   formatValue: 'Goals • Cards',
+  // );
 
   static const List<SportModel> allSports = [cricket, badminton];
 
