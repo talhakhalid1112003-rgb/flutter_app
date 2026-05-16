@@ -45,7 +45,7 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
       if (createdBy != null) {
         data['createdBy'] = createdBy;
       }
-      await _firestore.collection('matches').doc(match.matchId).set(data);
+      await _firestore.collection('matches').doc(match.matchId).set(data, SetOptions(merge: true));
     } catch (e) {
       throw ServerFailure(e.toString());
     }
@@ -84,7 +84,7 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
           .doc(innings.matchId)
           .collection('innings')
           .doc(innings.inningsId)
-          .set(innings.toJson());
+          .set(innings.toJson(), SetOptions(merge: true));
     } catch (e) {
       throw ServerFailure(e.toString());
     }
@@ -145,7 +145,7 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
           .doc(stats.matchId)
           .collection('playerStats')
           .doc(stats.playerId)
-          .set(stats.toJson());
+          .set(stats.toJson(), SetOptions(merge: true));
     } catch (e) {
       throw ServerFailure(e.toString());
     }
@@ -184,8 +184,8 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
         final ballRef = matchRef.collection('balls').doc(ball.ballId);
 
         // Within transaction, we just use transaction.set() or update()
-        transaction.set(matchRef, match.toJson());
-        transaction.set(inningsRef, innings.toJson());
+        transaction.set(matchRef, match.toJson(), SetOptions(merge: true));
+        transaction.set(inningsRef, innings.toJson(), SetOptions(merge: true));
         transaction.set(ballRef, ball.toJson());
       });
     } catch (e) {
