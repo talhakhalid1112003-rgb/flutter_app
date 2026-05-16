@@ -13,30 +13,44 @@ class MatchHistoryScreen extends ConsumerWidget {
     final matchesAsync = ref.watch(matchesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Easy Cricket Scorer'),
-      ),
+      appBar: AppBar(title: const Text('Easy Cricket Scorer')),
       body: matchesAsync.when(
         data: (matches) {
-          final independentMatches = matches.where((m) => m.tournamentId == null).toList();
+          final runningMatches = matches
+              .where((m) => m.matchStatus != 'completed')
+              .toList();
 
-          if (independentMatches.isEmpty) return const Center(child: Text("No independent matches found.", style: TextStyle(color: Colors.grey)));
-          
+          if (runningMatches.isEmpty)
+            return const Center(
+              child: Text(
+                "No running matches found.",
+                style: TextStyle(color: Colors.grey),
+              ),
+            );
+
           return ListView.builder(
-            itemCount: independentMatches.length,
+            itemCount: runningMatches.length,
             padding: const EdgeInsets.all(16),
             itemBuilder: (context, index) {
-              final match = independentMatches[index];
+              final match = runningMatches[index];
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 color: AppTheme.cardColorDark,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Match Date Placeholder', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      Text(
+                        'Match Date Placeholder',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,13 +60,28 @@ class MatchHistoryScreen extends ConsumerWidget {
                               CircleAvatar(
                                 radius: 16,
                                 backgroundColor: AppTheme.primaryBlue,
-                                child: Text(match.teamAName.substring(0, 2).toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 12)),
+                                child: Text(
+                                  match.teamAName.substring(0, 2).toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 8),
-                              Text(match.teamAName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text(
+                                match.teamAName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
-                          const Text('0/0 (0.0)', style: TextStyle(color: Colors.white)),
+                          const Text(
+                            '0/0 (0.0)',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -64,17 +93,39 @@ class MatchHistoryScreen extends ConsumerWidget {
                               CircleAvatar(
                                 radius: 16,
                                 backgroundColor: AppTheme.primaryBlue,
-                                child: Text(match.teamBName.substring(0, 2).toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 12)),
+                                child: Text(
+                                  match.teamBName.substring(0, 2).toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 8),
-                              Text(match.teamBName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text(
+                                match.teamBName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
-                          const Text('0/0 (0.0)', style: TextStyle(color: Colors.white)),
+                          const Text(
+                            '0/0 (0.0)',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Text('${match.tossWinner} won the toss and opted to ${match.tossDecision} first.', style: const TextStyle(color: AppTheme.primaryBlue, fontStyle: FontStyle.italic, fontSize: 12)),
+                      Text(
+                        '${match.tossWinner} won the toss and opted to ${match.tossDecision} first.',
+                        style: const TextStyle(
+                          color: AppTheme.primaryBlue,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         children: [
@@ -82,7 +133,8 @@ class MatchHistoryScreen extends ConsumerWidget {
                             onPressed: () async {
                               // Resume Match
                               try {
-                                final snap = await ref.read(firestoreProvider)
+                                final snap = await ref
+                                    .read(firestoreProvider)
                                     .collection('matches')
                                     .doc(match.matchId)
                                     .collection('innings')
@@ -91,26 +143,66 @@ class MatchHistoryScreen extends ConsumerWidget {
                                 if (snap.docs.isNotEmpty) {
                                   final inningsId = snap.docs.first.id;
                                   if (context.mounted) {
-                                    context.push('/scoring/${match.matchId}/$inningsId');
+                                    context.push(
+                                      '/scoring/${match.matchId}/$inningsId',
+                                    );
                                   }
                                 } else {
-                                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No innings found to resume.')));
+                                  if (context.mounted)
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'No innings found to resume.',
+                                        ),
+                                      ),
+                                    );
                                 }
                               } catch (e) {
-                                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                                if (context.mounted)
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
                               }
                             },
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: AppTheme.primaryBlue, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppTheme.primaryBlue,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                            ),
                             child: const Text('Resume'),
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
                             onPressed: () {},
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: AppTheme.primaryBlue, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppTheme.primaryBlue,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                            ),
                             child: const Text('Score board'),
                           ),
                           const SizedBox(width: 16),
-                          Text(match.matchStatus == 'live' ? 'Ongoing' : 'Completed', style: TextStyle(color: match.matchStatus == 'live' ? Colors.amber : Colors.grey, fontWeight: FontWeight.bold)),
+                          Text(
+                            match.matchStatus == 'live'
+                                ? 'Ongoing'
+                                : match.matchStatus == 'upcoming'
+                                ? 'Upcoming'
+                                : 'Completed',
+                            style: TextStyle(
+                              color: match.matchStatus == 'live'
+                                  ? Colors.amber
+                                  : match.matchStatus == 'upcoming'
+                                  ? Colors.lightBlueAccent
+                                  : Colors.grey,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const Spacer(),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
@@ -120,24 +212,36 @@ class MatchHistoryScreen extends ConsumerWidget {
                                 context: context,
                                 builder: (ctx) => AlertDialog(
                                   title: const Text('Delete Match'),
-                                  content: const Text('Are you sure you want to delete this match?'),
+                                  content: const Text(
+                                    'Are you sure you want to delete this match?',
+                                  ),
                                   actions: [
-                                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(ctx, false),
+                                      child: const Text('Cancel'),
+                                    ),
                                     ElevatedButton(
                                       onPressed: () => Navigator.pop(ctx, true),
-                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
                                       child: const Text('Delete'),
                                     ),
                                   ],
                                 ),
                               );
                               if (confirm == true) {
-                                await ref.read(firestoreProvider).collection('matches').doc(match.matchId).delete();
+                                await ref
+                                    .read(firestoreProvider)
+                                    .collection('matches')
+                                    .doc(match.matchId)
+                                    .delete();
                               }
                             },
-                          )
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),

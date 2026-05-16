@@ -12,7 +12,20 @@
           "package_name": "com.example.scoring_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "677288246627-a0gddv0dguaccentmvj81jvc9e34m67d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.scoring_app",
+            "certificate_hash": "d99af676a572d2abc4dd2e901fddea3f0b147e01"
+          }
+        },
+        {
+          "client_id": "677288246627-q8irpge8sdbruqsuoa7jtdma5v0u16r9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAgpA9noNrmog7uiZoWrSZHTaYRGe8Kip0"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677288246627-q8irpge8sdbruqsuoa7jtdma5v0u16r9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "677288246627-ejj36jcu144ia4qj43afudnsm3u0obsr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.scoringApp"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +56,20 @@
           "package_name": "com.example.smart_cricket_scorer"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "677288246627-k4tua76h5ahbnu4ine9u2msgp8pts4nh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_cricket_scorer",
+            "certificate_hash": "d99af676a572d2abc4dd2e901fddea3f0b147e01"
+          }
+        },
+        {
+          "client_id": "677288246627-q8irpge8sdbruqsuoa7jtdma5v0u16r9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAgpA9noNrmog7uiZoWrSZHTaYRGe8Kip0"
@@ -39,7 +77,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677288246627-q8irpge8sdbruqsuoa7jtdma5v0u16r9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "677288246627-ejj36jcu144ia4qj43afudnsm3u0obsr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.scoringApp"
+              }
+            }
+          ]
         }
       }
     }

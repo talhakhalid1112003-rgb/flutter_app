@@ -34,11 +34,10 @@ class GoogleSignInButton extends StatelessWidget {
                   ),
                 ),
               )
-            : Image.asset(
-                'assets/google_logo.png',
-                height: 20,
-                width: 20,
-                package: 'google_sign_in_web',
+            : Icon(
+                Icons.g_mobiledata,
+                size: 20,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
         label: Text(
           isLoading ? 'Signing in...' : 'Sign in with Google',

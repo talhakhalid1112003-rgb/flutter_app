@@ -35,13 +35,16 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
   }
 
   @override
-  Future<void> createMatch(AppMatch match, {required String sportId, String? createdBy}) async {
+  Future<void> createMatch(
+    AppMatch match, {
+    required String sportId,
+    String? createdBy,
+  }) async {
     try {
-      final data = <String, dynamic>{
-        ...match.toJson(),
-        'sportId': sportId,
-        'createdBy': ?createdBy,
-      };
+      final data = <String, dynamic>{...match.toJson(), 'sportId': sportId};
+      if (createdBy != null) {
+        data['createdBy'] = createdBy;
+      }
       await _firestore.collection('matches').doc(match.matchId).set(data);
     } catch (e) {
       throw ServerFailure(e.toString());

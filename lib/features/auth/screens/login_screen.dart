@@ -98,19 +98,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-                      // Simple cricket icon using Icon widget for placeholder
+                      // Project logo asset
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
                           color: Theme.of(
                             context,
-                          ).colorScheme.primary.withValues(alpha: 0.1),
+                          ).colorScheme.primary.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.sports_cricket,
-                          size: 56,
-                          color: Theme.of(context).colorScheme.primary,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/Cricket Logo.jfif',
+                            width: 92,
+                            height: 92,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ],
