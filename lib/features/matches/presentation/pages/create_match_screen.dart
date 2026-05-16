@@ -47,6 +47,17 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('$selectedSport Scorer'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to Dashboard',
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

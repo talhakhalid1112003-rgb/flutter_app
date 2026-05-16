@@ -56,7 +56,20 @@ class _BadmintonMatchCreateScreenState
     final selectedSportText = 'Selected sport: badminton';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('BADMINTON Scorer')),
+      appBar: AppBar(
+        title: const Text('BADMINTON Scorer'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to Dashboard',
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
+      ),
       bottomNavigationBar: BadmintonBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => _goToIndex(context, index),

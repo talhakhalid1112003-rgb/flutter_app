@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:scoring_app/constants/app_colors.dart';
 import 'package:scoring_app/models/sport_model.dart';
 import 'package:scoring_app/core/providers/firebase_providers.dart';
+import 'package:scoring_app/core/config/app_theme.dart';
 
 class SportSelectionScreen extends ConsumerWidget {
   const SportSelectionScreen({super.key});
@@ -14,10 +15,28 @@ class SportSelectionScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Choose a sport'),
+        title: const Text(
+          'Choose a sport',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        backgroundColor: AppTheme.primaryBlue,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF5A6BFF), Color(0xFF3A4BDE)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () => _showLogoutDialog(context, ref),
             tooltip: 'Logout',
           ),

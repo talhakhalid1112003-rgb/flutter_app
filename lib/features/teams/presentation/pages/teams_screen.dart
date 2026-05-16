@@ -24,7 +24,7 @@ class _TeamsScreenState extends ConsumerState<TeamsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Teams & Players'),
+        title: const Text('Teams'),
       ),
       body: Column(
         children: [
