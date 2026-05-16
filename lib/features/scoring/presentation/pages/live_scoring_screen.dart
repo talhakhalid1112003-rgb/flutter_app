@@ -295,7 +295,13 @@ class _LiveScoringScreenState extends ConsumerState<LiveScoringScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
         ),
         title: const Text('Easy Cricket Scorer'),
         actions: [

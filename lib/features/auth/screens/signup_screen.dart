@@ -99,7 +99,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/login');
+            }
+          },
         ),
         title: const Text('Create Account'),
       ),
@@ -255,7 +261,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               children: [
                                 const Text('Already have an account? '),
                                 TextButton(
-                                  onPressed: () => context.pop(),
+                                  onPressed: () {
+                                    if (context.canPop()) {
+                                      context.pop();
+                                    } else {
+                                      context.go('/login');
+                                    }
+                                  },
                                   child: const Text('Login here'),
                                 ),
                               ],

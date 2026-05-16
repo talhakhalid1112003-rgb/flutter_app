@@ -19,7 +19,13 @@ class TournamentDashboardScreen extends ConsumerWidget {
         title: const Text('Tournament Dashboard'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/tournaments');
+            }
+          },
         ),
       ),
       body: tournamentAsync.when(
@@ -77,7 +83,13 @@ class TournamentDashboardScreen extends ConsumerWidget {
                             .updateTournament(
                               tournament.copyWith(status: 'completed'),
                             );
-                        if (context.mounted) context.pop();
+                        if (context.mounted) {
+                          if (context.canPop()) {
+                            context.pop();
+                          } else {
+                            context.go('/tournaments');
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
