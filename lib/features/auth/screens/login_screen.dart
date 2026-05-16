@@ -125,12 +125,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               label: 'Email',
                               controller: _emailCtrl,
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty)
+                                if (v == null || v.trim().isEmpty) {
                                   return 'Please enter email';
+                                }
                                 if (!RegExp(
                                   r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}",
-                                ).hasMatch(v.trim()))
+                                ).hasMatch(v.trim())) {
                                   return 'Invalid email';
+                                }
                                 return null;
                               },
                             ),
@@ -149,10 +151,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     setState(() => _obscure = !_obscure),
                               ),
                               validator: (v) {
-                                if (v == null || v.isEmpty)
+                                if (v == null || v.isEmpty) {
                                   return 'Please enter password';
-                                if (v.length < 6)
+                                }
+                                if (v.length < 6) {
                                   return 'Password must be at least 6 characters';
+                                }
                                 return null;
                               },
                             ),
@@ -216,6 +220,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                             )
                                             .sendPasswordReset(email);
                                         ScaffoldMessenger.of(
+                                          // ignore: use_build_context_synchronously
                                           context,
                                         ).showSnackBar(
                                           const SnackBar(
@@ -226,6 +231,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         );
                                       } catch (e) {
                                         ScaffoldMessenger.of(
+                                          // ignore: use_build_context_synchronously
                                           context,
                                         ).showSnackBar(
                                           SnackBar(
