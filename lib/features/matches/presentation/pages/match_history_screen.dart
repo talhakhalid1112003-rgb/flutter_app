@@ -20,13 +20,14 @@ class MatchHistoryScreen extends ConsumerWidget {
               .where((m) => m.matchStatus != 'completed')
               .toList();
 
-          if (runningMatches.isEmpty)
+          if (runningMatches.isEmpty) {
             return const Center(
               child: Text(
                 "No running matches found.",
                 style: TextStyle(color: Colors.grey),
               ),
             );
+          }
 
           return ListView.builder(
             itemCount: runningMatches.length,
@@ -118,7 +119,7 @@ class MatchHistoryScreen extends ConsumerWidget {
                                     );
                                   }
                                 } else {
-                                  if (context.mounted)
+                                  if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text(
@@ -126,12 +127,14 @@ class MatchHistoryScreen extends ConsumerWidget {
                                         ),
                                       ),
                                     );
+                                  }
                                 }
                               } catch (e) {
-                                if (context.mounted)
+                                if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Error: $e')),
                                   );
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
