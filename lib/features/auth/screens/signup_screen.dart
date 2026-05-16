@@ -5,6 +5,7 @@ import 'package:scoring_app/features/auth/providers/auth_provider.dart';
 import 'package:scoring_app/features/auth/widgets/custom_button.dart';
 import 'package:scoring_app/features/auth/widgets/custom_text_field.dart';
 import 'package:scoring_app/features/auth/widgets/loading_widget.dart';
+import 'package:scoring_app/features/auth/widgets/google_sign_in_button.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -34,20 +35,49 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Future<void> _signup() async {
     if (!_formKey.currentState!.validate()) return;
     if (_passCtrl.text != _confirmPassCtrl.text) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
     final auth = ref.read(authControllerProvider.notifier);
     try {
-      await auth.signUp(_nameCtrl.text.trim(), _emailCtrl.text.trim(), _passCtrl.text);
+      await auth.signUp(
+        _nameCtrl.text.trim(),
+        _emailCtrl.text.trim(),
+        _passCtrl.text,
+      );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account created successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created successfully')),
+        );
         context.go('/sport-selection');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+      }
+    }
+  }
+
+  Future<void> _googleSignUp() async {
+    final auth = ref.read(authControllerProvider.notifier);
+    try {
+      await auth.signInWithGoogle();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign-up successful')),
+        );
+        context.go('/sport-selection');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Google sign-up failed: $e')));
       }
     }
   }
@@ -78,20 +108,26 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 children: [
                   Text(
                     'Join Easy Sport Scorer',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Create an account to get started',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 28),
 
                   Card(
                     color: Theme.of(context).colorScheme.surface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Form(
@@ -102,7 +138,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               label: 'Name',
                               controller: _nameCtrl,
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty) return 'Please enter your name';
+                                if (v == null || v.trim().isEmpty)
+                                  return 'Please enter your name';
                                 return null;
                               },
                             ),
@@ -111,8 +148,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               label: 'Email',
                               controller: _emailCtrl,
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty) return 'Please enter email';
-                                if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}").hasMatch(v.trim())) return 'Invalid email';
+                                if (v == null || v.trim().isEmpty)
+                                  return 'Please enter email';
+                                if (!RegExp(
+                                  r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}",
+                                ).hasMatch(v.trim()))
+                                  return 'Invalid email';
                                 return null;
                               },
                             ),
@@ -122,12 +163,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               controller: _passCtrl,
                               obscureText: _obscure,
                               suffix: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-                                onPressed: () => setState(() => _obscure = !_obscure),
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
                               ),
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'Please enter password';
-                                if (v.length < 6) return 'Password must be at least 6 characters';
+                                if (v == null || v.isEmpty)
+                                  return 'Please enter password';
+                                if (v.length < 6)
+                                  return 'Password must be at least 6 characters';
                                 return null;
                               },
                             ),
@@ -137,11 +185,18 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               controller: _confirmPassCtrl,
                               obscureText: _confirmObscure,
                               suffix: IconButton(
-                                icon: Icon(_confirmObscure ? Icons.visibility_off : Icons.visibility),
-                                onPressed: () => setState(() => _confirmObscure = !_confirmObscure),
+                                icon: Icon(
+                                  _confirmObscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () => setState(
+                                  () => _confirmObscure = !_confirmObscure,
+                                ),
                               ),
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'Please confirm password';
+                                if (v == null || v.isEmpty)
+                                  return 'Please confirm password';
                                 return null;
                               },
                             ),
@@ -149,7 +204,39 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             if (authState.isLoading)
                               const LoadingWidget(text: 'Creating account...')
                             else
-                              CustomButton(label: 'Create Account', onPressed: _signup),
+                              CustomButton(
+                                label: 'Create Account',
+                                onPressed: _signup,
+                              ),
+                            const SizedBox(height: 16),
+                            // Divider with text
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(color: Colors.grey.shade600),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade400,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            GoogleSignInButton(
+                              isLoading: authState.isLoading,
+                              onPressed: _googleSignUp,
+                            ),
                             const SizedBox(height: 12),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,

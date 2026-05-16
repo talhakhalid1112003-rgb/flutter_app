@@ -5,6 +5,7 @@ import 'package:scoring_app/features/auth/providers/auth_provider.dart';
 import 'package:scoring_app/features/auth/widgets/custom_button.dart';
 import 'package:scoring_app/features/auth/widgets/custom_text_field.dart';
 import 'package:scoring_app/features/auth/widgets/loading_widget.dart';
+import 'package:scoring_app/features/auth/widgets/google_sign_in_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -32,12 +33,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await auth.signIn(_emailCtrl.text.trim(), _passCtrl.text);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login successful')));
         context.go('/sport-selection');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
+      }
+    }
+  }
+
+  Future<void> _googleSignIn() async {
+    final auth = ref.read(authControllerProvider.notifier);
+    try {
+      await auth.signInWithGoogle();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google sign-in successful')),
+        );
+        context.go('/sport-selection');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
       }
     }
   }
@@ -61,16 +85,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // Title + illustration
                   Column(
                     children: [
-                      Text('Easy Sport Scorer', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        'Easy Sport Scorer',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 12),
                       // Simple cricket icon using Icon widget for placeholder
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.sports_cricket, size: 56, color: Theme.of(context).colorScheme.primary),
+                        child: Icon(
+                          Icons.sports_cricket,
+                          size: 56,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ],
                   ),
@@ -78,7 +112,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   Card(
                     color: Theme.of(context).colorScheme.surface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Form(
@@ -89,8 +125,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               label: 'Email',
                               controller: _emailCtrl,
                               validator: (v) {
-                                if (v == null || v.trim().isEmpty) return 'Please enter email';
-                                if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}").hasMatch(v.trim())) return 'Invalid email';
+                                if (v == null || v.trim().isEmpty)
+                                  return 'Please enter email';
+                                if (!RegExp(
+                                  r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}",
+                                ).hasMatch(v.trim()))
+                                  return 'Invalid email';
                                 return null;
                               },
                             ),
@@ -100,17 +140,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               controller: _passCtrl,
                               obscureText: _obscure,
                               suffix: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-                                onPressed: () => setState(() => _obscure = !_obscure),
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
                               ),
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'Please enter password';
-                                if (v.length < 6) return 'Password must be at least 6 characters';
+                                if (v == null || v.isEmpty)
+                                  return 'Please enter password';
+                                if (v.length < 6)
+                                  return 'Password must be at least 6 characters';
                                 return null;
                               },
                             ),
                             const SizedBox(height: 18),
-                            if (authState.isLoading) const LoadingWidget(text: 'Signing in...') else CustomButton(label: 'Login', onPressed: _login),
+                            if (authState.isLoading)
+                              const LoadingWidget(text: 'Signing in...')
+                            else
+                              CustomButton(label: 'Login', onPressed: _login),
+                            const SizedBox(height: 16),
+                            // Divider with text
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(color: Colors.grey.shade600),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade400,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            GoogleSignInButton(
+                              isLoading: authState.isLoading,
+                              onPressed: _googleSignIn,
+                            ),
                             const SizedBox(height: 8),
                             Row(
                               children: [
@@ -119,14 +198,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     onPressed: () async {
                                       final email = _emailCtrl.text.trim();
                                       if (email.isEmpty) {
-                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter email to reset password')));
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Enter email to reset password',
+                                            ),
+                                          ),
+                                        );
                                         return;
                                       }
                                       try {
-                                        await ref.read(authControllerProvider.notifier).sendPasswordReset(email);
-                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset email sent')));
+                                        await ref
+                                            .read(
+                                              authControllerProvider.notifier,
+                                            )
+                                            .sendPasswordReset(email);
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Password reset email sent',
+                                            ),
+                                          ),
+                                        );
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reset failed: $e')));
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Reset failed: $e'),
+                                          ),
+                                        );
                                       }
                                     },
                                     child: const Text('Forgot Password?'),

@@ -8,9 +8,10 @@ final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService();
 });
 
-final authControllerProvider = NotifierProvider<AuthController, AsyncValue<User?>>(() {
-  return AuthController();
-});
+final authControllerProvider =
+    NotifierProvider<AuthController, AsyncValue<User?>>(() {
+      return AuthController();
+    });
 
 class AuthController extends Notifier<AsyncValue<User?>> {
   late final AuthService _service;
@@ -61,7 +62,9 @@ class AuthController extends Notifier<AsyncValue<User?>> {
       rethrow;
     } catch (e, st) {
       if (e is FirebaseException && e.code == 'permission-denied') {
-        final error = Exception('Firebase permission denied. Please check Firestore rules for the users collection.');
+        final error = Exception(
+          'Firebase permission denied. Please check Firestore rules for the users collection.',
+        );
         state = AsyncValue.error(error, st);
         rethrow;
       }
@@ -85,10 +88,36 @@ class AuthController extends Notifier<AsyncValue<User?>> {
       rethrow;
     } catch (e, st) {
       if (e is FirebaseException && e.code == 'permission-denied') {
-        final error = Exception('Firebase permission denied while saving user profile. Please update Firestore rules for the users collection.');
+        final error = Exception(
+          'Firebase permission denied while saving user profile. Please update Firestore rules for the users collection.',
+        );
         state = AsyncValue.error(error, st);
         rethrow;
       }
+      state = AsyncValue.error(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+    try {
+      final user = await _service.signInWithGoogle();
+      if (user == null) {
+        throw Exception('Google sign-in cancelled or failed.');
+      }
+
+      // Fetch or create user profile with Google user data
+      await _fetchOrCreateUserProfile(
+        user,
+        name: user.displayName,
+        email: user.email,
+      );
+      state = AsyncValue.data(user);
+    } on FirebaseAuthException catch (e, st) {
+      state = AsyncValue.error(e, st);
+      rethrow;
+    } catch (e, st) {
       state = AsyncValue.error(e, st);
       rethrow;
     }
