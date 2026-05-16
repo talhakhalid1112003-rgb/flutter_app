@@ -14,7 +14,9 @@ class BadmintonTournamentHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    final service = BadmintonTournamentHistoryService(FirebaseFirestore.instance);
+    final service = BadmintonTournamentHistoryService(
+      FirebaseFirestore.instance,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +35,8 @@ class BadmintonTournamentHistoryScreen extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return _buildEmptyState(
-                    message: 'Failed to load tournament history: ${snapshot.error}',
+                    message:
+                        'Failed to load tournament history: ${snapshot.error}',
                   );
                 }
 
@@ -41,7 +44,8 @@ class BadmintonTournamentHistoryScreen extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final tournaments = snapshot.data ?? <BadmintonTournamentModel>[];
+                final tournaments =
+                    snapshot.data ?? <BadmintonTournamentModel>[];
                 if (tournaments.isEmpty) {
                   return _buildEmptyState(
                     message: 'No badminton tournaments have been saved yet.',
@@ -51,7 +55,7 @@ class BadmintonTournamentHistoryScreen extends StatelessWidget {
                 return ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: tournaments.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final tournament = tournaments[index];
                     return Card(

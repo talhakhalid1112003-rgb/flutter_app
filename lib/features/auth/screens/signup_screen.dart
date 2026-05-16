@@ -33,7 +33,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Future<void> _signup() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     if (_passCtrl.text != _confirmPassCtrl.text) {
       ScaffoldMessenger.of(
         context,
@@ -48,18 +50,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         _emailCtrl.text.trim(),
         _passCtrl.text,
       );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created successfully')),
-        );
-        context.go('/sport-selection');
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created successfully')),
+      );
+      context.go('/sport-selection');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
     }
   }
 
@@ -67,18 +71,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final auth = ref.read(authControllerProvider.notifier);
     try {
       await auth.signInWithGoogle();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google sign-up successful')),
-        );
-        context.go('/sport-selection');
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Google sign-up successful')),
+      );
+      context.go('/sport-selection');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Google sign-up failed: $e')));
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Google sign-up failed: $e')));
     }
   }
 

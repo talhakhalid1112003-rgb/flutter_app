@@ -28,22 +28,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     final auth = ref.read(authControllerProvider.notifier);
     try {
       await auth.signIn(_emailCtrl.text.trim(), _passCtrl.text);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login successful')));
-        context.go('/sport-selection');
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Login successful')));
+      context.go('/sport-selection');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
     }
   }
 
@@ -51,18 +56,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final auth = ref.read(authControllerProvider.notifier);
     try {
       await auth.signInWithGoogle();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google sign-in successful')),
-        );
-        context.go('/sport-selection');
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Google sign-in successful')),
+      );
+      context.go('/sport-selection');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
+      if (!mounted) {
+        return;
       }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Google sign-in failed: $e')));
     }
   }
 
@@ -219,8 +226,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                               authControllerProvider.notifier,
                                             )
                                             .sendPasswordReset(email);
+                                        if (!mounted) {
+                                          return;
+                                        }
                                         ScaffoldMessenger.of(
-                                          // ignore: use_build_context_synchronously
                                           context,
                                         ).showSnackBar(
                                           const SnackBar(
@@ -230,8 +239,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           ),
                                         );
                                       } catch (e) {
+                                        if (!mounted) {
+                                          return;
+                                        }
                                         ScaffoldMessenger.of(
-                                          // ignore: use_build_context_synchronously
                                           context,
                                         ).showSnackBar(
                                           SnackBar(
