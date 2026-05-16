@@ -33,6 +33,7 @@ class MatchHistoryScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             itemBuilder: (context, index) {
               final match = runningMatches[index];
+              final inningsAsync = ref.watch(inningsProvider(match.matchId));
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 color: AppTheme.cardColorDark,
@@ -52,70 +53,39 @@ class MatchHistoryScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: AppTheme.primaryBlue,
+                      inningsAsync.when(
+                        data: (innings) {
+                          if (innings.isEmpty) {
+                            return const Text(
+                              'No score available yet',
+                              style: TextStyle(color: Colors.grey),
+                            );
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: innings.map((inningsEntry) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
                                 child: Text(
-                                  match.teamAName.substring(0, 2).toUpperCase(),
+                                  '${inningsEntry.battingTeamName}: ${inningsEntry.totalRuns}/${inningsEntry.wickets} (${inningsEntry.overs.toStringAsFixed(1)})',
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                match.teamAName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            '0/0 (0.0)',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: AppTheme.primaryBlue,
-                                child: Text(
-                                  match.teamBName.substring(0, 2).toUpperCase(),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                match.teamBName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            '0/0 (0.0)',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+                              );
+                            }).toList(),
+                          );
+                        },
+                        loading: () => const Text(
+                          'Loading score...',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        error: (e, st) => const Text(
+                          'Unable to load score',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(
