@@ -40,8 +40,8 @@ class ResetPasswordSuccessScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(
-                        theme.brightness == Brightness.dark ? 0.24 : 0.08,
+                      color: Colors.black.withValues(
+                        alpha: theme.brightness == Brightness.dark ? 0.24 : 0.08,
                       ),
                       blurRadius: 24,
                       offset: const Offset(0, 10),
@@ -58,7 +58,7 @@ class ResetPasswordSuccessScreen extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
                       ),
                       child: Icon(
                         Icons.mark_email_read_outlined,

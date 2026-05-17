@@ -212,7 +212,7 @@ class _BadmintonTournamentScreenState extends State<BadmintonTournamentScreen> {
                                         padding: const EdgeInsets.all(12),
                                         shrinkWrap: true,
                                         itemCount: _teams.length,
-                                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                                        separatorBuilder: (_, _) => const SizedBox(height: 12),
                                         itemBuilder: (context, index) {
                                           final team = _teams[index];
                                           final isSelected = _selectedTeamIds.contains(team.id);
@@ -366,6 +366,9 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localTrailing = trailing;
+    final localSubtitle = subtitle;
+    
     return Card(
       color: AppTheme.cardColorDark,
       child: Padding(
@@ -387,17 +390,17 @@ class _SectionCard extends StatelessWidget {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      if (subtitle != null) ...[
+                      if (localSubtitle != null) ...[
                         const SizedBox(height: 4),
                         Text(
-                          subtitle!,
+                          localSubtitle,
                           style: const TextStyle(color: Colors.white70),
                         ),
                       ],
                     ],
                   ),
                 ),
-                if (trailing != null) trailing!,
+                if (localTrailing != null) localTrailing,
               ],
             ),
             const SizedBox(height: 16),
