@@ -8,6 +8,9 @@ class BadmintonTournamentModel {
     required this.tournamentId,
     required this.userId,
     required this.createdAt,
+    required this.matchType,
+    required this.pointToWin,
+    required this.selectedTeamIds,
     required this.selectedTeams,
     required this.semifinal1,
     required this.semifinal2,
@@ -19,6 +22,9 @@ class BadmintonTournamentModel {
   final String tournamentId;
   final String userId;
   final DateTime createdAt;
+  final String matchType;
+  final int pointToWin;
+  final List<String> selectedTeamIds;
   final List<BadmintonTeamModel> selectedTeams;
   final BadmintonMatchModel? semifinal1;
   final BadmintonMatchModel? semifinal2;
@@ -40,6 +46,11 @@ class BadmintonTournamentModel {
     return BadmintonTournamentModel(
       tournamentId: (documentId ?? map['tournamentId'] ?? '').toString(),
       userId: (map['userId'] ?? '').toString(),
+      matchType: (map['matchType'] ?? 'Doubles').toString(),
+      pointToWin: (map['pointToWin'] as num?)?.toInt() ?? 21,
+      selectedTeamIds: List<String>.from(
+        map['selectedTeamIds'] as List<dynamic>? ?? const <dynamic>[],
+      ),
       createdAt: createdAtValue is Timestamp
           ? createdAtValue.toDate()
           : DateTime.tryParse(createdAtValue?.toString() ?? '') ??
@@ -75,6 +86,9 @@ class BadmintonTournamentModel {
     String? tournamentId,
     String? userId,
     DateTime? createdAt,
+    String? matchType,
+    int? pointToWin,
+    List<String>? selectedTeamIds,
     List<BadmintonTeamModel>? selectedTeams,
     BadmintonMatchModel? semifinal1,
     BadmintonMatchModel? semifinal2,
@@ -86,6 +100,9 @@ class BadmintonTournamentModel {
       tournamentId: tournamentId ?? this.tournamentId,
       userId: userId ?? this.userId,
       createdAt: createdAt ?? this.createdAt,
+      matchType: matchType ?? this.matchType,
+      pointToWin: pointToWin ?? this.pointToWin,
+      selectedTeamIds: selectedTeamIds ?? this.selectedTeamIds,
       selectedTeams: selectedTeams ?? this.selectedTeams,
       semifinal1: semifinal1 ?? this.semifinal1,
       semifinal2: semifinal2 ?? this.semifinal2,
@@ -99,6 +116,9 @@ class BadmintonTournamentModel {
     return <String, dynamic>{
       'tournamentId': tournamentId,
       'userId': userId,
+      'matchType': matchType,
+      'pointToWin': pointToWin,
+      'selectedTeamIds': selectedTeamIds,
       'createdAt': Timestamp.fromDate(createdAt),
       'selectedTeams': selectedTeams
           .map(

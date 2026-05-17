@@ -162,9 +162,12 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
           .collection('matches')
           .doc(matchId)
           .collection('balls')
+          .doc(inningsId)
+          .collection('balls')
           .doc(ballId)
           .delete();
-    } catch (e) {
+    }
+    catch (e) {
       throw ServerFailure(e.toString());
     }
   }
@@ -181,7 +184,7 @@ class FirebaseMatchRepositoryImpl implements MatchRepository {
         final inningsRef = matchRef
             .collection('innings')
             .doc(innings.inningsId);
-        final ballRef = matchRef.collection('balls').doc(ball.ballId);
+        final ballRef = inningsRef.collection('balls').doc(ball.ballId);
 
         // Within transaction, we just use transaction.set() or update()
         transaction.set(matchRef, match.toJson(), SetOptions(merge: true));

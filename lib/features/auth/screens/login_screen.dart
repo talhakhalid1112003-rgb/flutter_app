@@ -209,51 +209,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               children: [
                                 Expanded(
                                   child: TextButton(
-                                    onPressed: () async {
-                                      final email = _emailCtrl.text.trim();
-                                      if (email.isEmpty) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Enter email to reset password',
-                                            ),
-                                          ),
-                                        );
-                                        return;
-                                      }
-                                      try {
-                                        await ref
-                                            .read(
-                                              authControllerProvider.notifier,
-                                            )
-                                            .sendPasswordReset(email);
-                                        if (!mounted) {
-                                          return;
-                                        }
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Password reset email sent',
-                                            ),
-                                          ),
-                                        );
-                                      } catch (e) {
-                                        if (!mounted) {
-                                          return;
-                                        }
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text('Reset failed: $e'),
-                                          ),
-                                        );
-                                      }
-                                    },
+                                    onPressed: () => context.push(
+                                      '/forgot-password',
+                                      extra: _emailCtrl.text.trim().isEmpty
+                                          ? null
+                                          : _emailCtrl.text.trim(),
+                                    ),
                                     child: const Text('Forgot Password?'),
                                   ),
                                 ),

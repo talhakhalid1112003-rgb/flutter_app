@@ -47,6 +47,8 @@ class BadmintonTournamentDetailsScreen extends StatelessWidget {
                   title: 'Tournament Info',
                   children: [
                     _infoRow('Tournament ID', tournament.tournamentId),
+                    _infoRow('Match Type', tournament.matchType),
+                    _infoRow('Point To Win', tournament.pointToWin.toString()),
                     _infoRow('Status', tournament.tournamentStatus),
                     _infoRow(
                       'Date',

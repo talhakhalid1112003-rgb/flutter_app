@@ -67,7 +67,7 @@ class BadmintonTournamentHistoryService {
   Future<String> generateNextTournamentId() async {
     final snapshot = await _firestore.collection(collectionName).get();
     var highestSequence = 0;
-    final pattern = RegExp(r'^badminton_tournament-(\d+)$');
+    final pattern = RegExp(r'^badminton_tournament_history-(\d+)$');
 
     for (final doc in snapshot.docs) {
       final match = pattern.firstMatch(doc.id);
@@ -82,6 +82,6 @@ class BadmintonTournamentHistoryService {
     }
 
     final nextSequence = highestSequence + 1;
-    return 'badminton_tournament-${nextSequence.toString().padLeft(2, '0')}';
+    return 'badminton_tournament_history-${nextSequence.toString().padLeft(2, '0')}';
   }
 }

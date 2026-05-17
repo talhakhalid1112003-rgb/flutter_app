@@ -136,7 +136,7 @@ class _SportDashboardScreenState extends State<SportDashboardScreen> {
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () {
-                context.push('/badminton-history');
+                context.push('/badminton/history');
               },
               icon: const Icon(Icons.history),
               label: const Text('View Badminton History'),
@@ -155,7 +155,7 @@ class _SportDashboardScreenState extends State<SportDashboardScreen> {
 
   void _startMatch() {
     context.push(
-      '/badminton-match-create',
+      '/badminton/create',
       extra: <String, dynamic>{
         'sport': widget.sport,
         'sportId': widget.sportId,

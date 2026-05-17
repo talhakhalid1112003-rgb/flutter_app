@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scoring_app/core/presentation/pages/main_screen.dart';
@@ -13,32 +14,43 @@ import 'package:scoring_app/features/sport_selection/presentation/pages/sport_se
 import 'package:scoring_app/features/scoring/presentation/pages/live_scoring_screen.dart';
 import 'package:scoring_app/features/scoring/presentation/pages/partnership_screen.dart';
 import 'package:scoring_app/features/auth/screens/login_screen.dart';
+import 'package:scoring_app/features/auth/screens/forgot_password_screen.dart';
+import 'package:scoring_app/features/auth/screens/reset_password_success_screen.dart';
 import 'package:scoring_app/features/auth/screens/signup_screen.dart';
 import 'package:scoring_app/features/badminton/data/models/badminton_match_model.dart';
+import 'package:scoring_app/features/badminton/data/models/badminton_tournament_model.dart';
 import 'package:scoring_app/features/badminton/presentation/pages/badminton_history_screen.dart';
 import 'package:scoring_app/features/badminton/presentation/pages/badminton_tournament_details_screen.dart';
-import 'package:scoring_app/features/badminton/presentation/pages/badminton_tournament_history_screen.dart';
 import 'package:scoring_app/features/badminton/presentation/pages/badminton_match_create_screen.dart';
 import 'package:scoring_app/features/badminton/presentation/pages/badminton_match_screen.dart';
+import 'package:scoring_app/features/badminton/presentation/pages/badminton_tournament_match_screen.dart';
 import 'package:scoring_app/features/badminton/presentation/pages/badminton_teams_screen.dart';
 import 'package:scoring_app/features/badminton/presentation/pages/badminton_tournament_screen.dart';
+
+bool isPublicAuthRoute(String path) {
+  return path == '/login' ||
+      path == '/signup' ||
+      path == '/forgot-password' ||
+      path == '/reset-password-success';
+}
+
+String? redirectForAuth(String path, bool isLoggedIn) {
+  if (!isLoggedIn) {
+    return isPublicAuthRoute(path) ? null : '/login';
+  }
+
+  if (path == '/login' || path == '/signup' || path == '/') {
+    return '/sport-selection';
+  }
+
+  return null;
+}
 
 final appRouter = GoRouter(
   initialLocation: '/',
   redirect: (context, state) {
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
-    if (!isLoggedIn) {
-      if (state.uri.path != '/login' && state.uri.path != '/signup') {
-        return '/login';
-      }
-    } else {
-      if (state.uri.path == '/login' ||
-          state.uri.path == '/signup' ||
-          state.uri.path == '/') {
-        return '/sport-selection';
-      }
-    }
-    return null;
+    return redirectForAuth(state.uri.path, isLoggedIn);
   },
   routes: [
     StatefulShellRoute.indexedStack(
@@ -117,16 +129,37 @@ final appRouter = GoRouter(
       builder: (context, state) => const BadmintonTournamentScreen(),
     ),
     GoRoute(
+      path: '/badminton/tournament/match',
+      builder: (context, state) {
+        final tournament = state.extra is BadmintonTournamentModel
+            ? state.extra as BadmintonTournamentModel
+            : null;
+        if (tournament == null) {
+          return const Scaffold(
+            body: Center(child: Text('Tournament session missing.')),
+          );
+        }
+        return BadmintonTournamentMatchScreen(tournament: tournament);
+      },
+    ),
+    GoRoute(
       path: '/badminton/teams',
       builder: (context, state) => const BadmintonTeamsScreen(),
     ),
     GoRoute(
       path: '/badminton/history',
-      builder: (context, state) => const BadmintonHistoryScreen(),
+      builder: (context, state) {
+        return BadmintonHistoryScreen(
+          initialTabIndex:
+              state.uri.queryParameters['tab'] == 'tournament' ? 1 : 0,
+        );
+      },
     ),
     GoRoute(
       path: '/badminton/tournament-history',
-      builder: (context, state) => const BadmintonTournamentHistoryScreen(),
+      builder: (context, state) => BadmintonHistoryScreen(
+        initialTabIndex: state.uri.queryParameters['tab'] == 'tournament' ? 1 : 0,
+      ),
     ),
     GoRoute(
       path: '/badminton/tournament-history/:tournamentId',
@@ -147,22 +180,6 @@ final appRouter = GoRouter(
       },
     ),
     GoRoute(
-      path: '/dashboard/badminton',
-      builder: (context, state) => const BadmintonMatchCreateScreen(),
-    ),
-    GoRoute(
-      path: '/badminton-match-create',
-      builder: (context, state) => const BadmintonMatchCreateScreen(),
-    ),
-    GoRoute(
-      path: '/badminton-history',
-      builder: (context, state) => const BadmintonHistoryScreen(),
-    ),
-    GoRoute(
-      path: '/badminton-format-screen',
-      builder: (context, state) => const BadmintonMatchCreateScreen(),
-    ),
-    GoRoute(
       path: '/badminton-match-score/:matchId',
       builder: (context, state) {
         return BadmintonMatchScreen(
@@ -172,6 +189,10 @@ final appRouter = GoRouter(
               : null,
         );
       },
+    ),
+    GoRoute(
+      path: '/dashboard/badminton',
+      builder: (context, state) => const BadmintonMatchCreateScreen(),
     ),
     GoRoute(
       path: '/create-tournament',
@@ -214,5 +235,19 @@ final appRouter = GoRouter(
     ),
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) {
+        final initialEmail = state.extra is String ? state.extra as String : null;
+        return ForgotPasswordScreen(initialEmail: initialEmail);
+      },
+    ),
+    GoRoute(
+      path: '/reset-password-success',
+      builder: (context, state) {
+        final email = state.extra is String ? state.extra as String : null;
+        return ResetPasswordSuccessScreen(email: email);
+      },
+    ),
   ],
 );
