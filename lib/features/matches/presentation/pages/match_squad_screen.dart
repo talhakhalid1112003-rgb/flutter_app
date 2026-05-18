@@ -40,6 +40,16 @@ class MatchSquadScreen extends ConsumerWidget {
           length: 2,
           child: Scaffold(
             appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go('/new-match');
+                  }
+                },
+              ),
               title: const Text('Add Squad Players'),
               bottom: TabBar(
                 indicatorColor: AppTheme.primaryBlue,
