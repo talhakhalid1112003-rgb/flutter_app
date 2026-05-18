@@ -29,6 +29,13 @@ class MatchSquadScreen extends ConsumerWidget {
         }
         final match = matchOpt.first;
 
+        final teamAAsync = ref.watch(playersByTeamProvider(match.teamAId!));
+        final teamBAsync = ref.watch(playersByTeamProvider(match.teamBId!));
+
+        int teamACount = teamAAsync.maybeWhen(data: (p) => p.length, orElse: () => 0);
+        int teamBCount = teamBAsync.maybeWhen(data: (p) => p.length, orElse: () => 0);
+        bool canStart = teamACount == 11 && teamBCount == 11;
+
         return DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -39,8 +46,8 @@ class MatchSquadScreen extends ConsumerWidget {
                 labelColor: AppTheme.primaryBlue,
                 unselectedLabelColor: Colors.grey,
                 tabs: [
-                  Tab(text: match.teamAName),
-                  Tab(text: match.teamBName),
+                  Tab(text: '${match.teamAName} ($teamACount/11)'),
+                  Tab(text: '${match.teamBName} ($teamBCount/11)'),
                 ],
               ),
             ),
@@ -53,10 +60,20 @@ class MatchSquadScreen extends ConsumerWidget {
             bottomNavigationBar: Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () => context.go('/scoring/$matchId/$inningsId'),
+                onPressed: () {
+                  if (canStart) {
+                    context.go('/scoring/$matchId/$inningsId');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Both teams must have exactly 11 players. (Team A: $teamACount, Team B: $teamBCount)')),
+                    );
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  backgroundColor: canStart ? AppTheme.primaryBlue : Colors.grey.shade800,
+                  foregroundColor: Colors.white,
                 ),
                 child: const Text('Start Match'),
               ),
