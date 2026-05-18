@@ -82,6 +82,8 @@ class _TeamSquadTab extends ConsumerStatefulWidget {
 
 class _TeamSquadTabState extends ConsumerState<_TeamSquadTab> {
   final _nameCtrl = TextEditingController();
+  String _selectedRole = 'Batter';
+  final List<String> _roles = ['Batter', 'Bowler', 'All Rounder', 'Batter and Keeper'];
 
   void _addPlayer() async {
     final name = _nameCtrl.text.trim();
@@ -91,7 +93,7 @@ class _TeamSquadTabState extends ConsumerState<_TeamSquadTab> {
       playerId: const Uuid().v4(),
       playerName: name,
       teamId: widget.teamId,
-      role: 'Batter', 
+      role: _selectedRole, 
       battingStyle: 'Right Hand',
       bowlingStyle: 'Right Arm Fast',
     );
@@ -99,6 +101,9 @@ class _TeamSquadTabState extends ConsumerState<_TeamSquadTab> {
     try {
       await ref.read(playerRepositoryProvider).addPlayer(newPlayer);
       _nameCtrl.clear();
+      setState(() {
+        _selectedRole = 'Batter';
+      });
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -112,24 +117,44 @@ class _TeamSquadTabState extends ConsumerState<_TeamSquadTab> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          Row(
+          Column(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _nameCtrl,
-                  decoration: InputDecoration(
-                    labelText: 'Player Name',
-                    hintText: 'Enter name to add to ${widget.teamName}',
-                  ),
+              TextField(
+                controller: _nameCtrl,
+                decoration: InputDecoration(
+                  labelText: 'Player Name',
+                  hintText: 'Enter name to add to ${widget.teamName}',
                 ),
               ),
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: _addPlayer,
-                icon: const Icon(Icons.add_circle),
-                color: AppTheme.primaryBlue,
-                iconSize: 40,
-              )
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedRole,
+                      items: _roles.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                      onChanged: (v) {
+                        if (v != null) {
+                          setState(() => _selectedRole = v);
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Role',
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    onPressed: _addPlayer,
+                    icon: const Icon(Icons.add_circle),
+                    color: AppTheme.primaryBlue,
+                    iconSize: 40,
+                  )
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 16),
